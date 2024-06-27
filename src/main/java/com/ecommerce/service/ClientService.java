@@ -1,6 +1,9 @@
 package com.ecommerce.service;
 
+import com.ecommerce.exception.ClientGenericsException;
 import com.ecommerce.exception.ClientNotFoundException;
+import com.ecommerce.exception.InvalidClientCodeException;
+import com.ecommerce.exception.InvalidPasswordException;
 import com.ecommerce.model.Client;
 import com.ecommerce.repository.ClientRepository;
 import com.ecommerce.service.interfaces.ClientFunctions;
@@ -16,8 +19,20 @@ public class ClientService implements ClientFunctions {
     private ClientRepository clientRepository;
 
     @Override
-    public boolean login(String idClient, String password) {
-        return false;
+    public boolean login(String idClient, String password) throws InvalidClientCodeException, ClientNotFoundException, InvalidPasswordException, ClientGenericsException {
+
+        try {
+            Client client = getClient(idClient).orElseThrow(() -> new ClientNotFoundException(idClient));
+            if (!client.getIdClient().equals(idClient)) throw new InvalidClientCodeException(idClient);
+            System.out.println(client.getIdClient());
+            if (!client.getPassword().equals(password)) throw new InvalidPasswordException(idClient);
+            System.out.println(client.getPassword());
+        } catch (ClientNotFoundException | InvalidPasswordException | InvalidClientCodeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ClientGenericsException("Login failed", e);
+        }
+        return true;
     }
 
     @Override

@@ -1,7 +1,7 @@
 -- Inserimento dei clients
 INSERT INTO clients (id_client, email, name, surname, password) VALUES
-('b12b0459-9daa-4c07-9b2f-40dd0cfa5ff4', 'john.dow@email.com', 'John', 'Doe', 'hg5FTkl2'),
-('b12b0459-9daa-4c07-9b2f-40dd0cfa5ff5', 'jane.dow@email.com', 'Jane', 'Doe', 'sd5FTkl2');
+('b12b0459-9daa-4c07-9b2f-40dd0cfa5ff4', 'john.dow@email.com', 'John', 'Doe', 'Hsf45gt6'),
+('b12b0459-9daa-4c07-9b2f-40dd0cfa5ff5', 'jane.dow@email.com', 'Jane', 'Doe', 'Sdrft65w');
 
 -- Inserimento degli articles
 INSERT INTO articles (id_article, name_article, description, quantity, price) VALUES

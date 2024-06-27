@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS clients (
     email VARCHAR(36) NOT NULL,
     name VARCHAR(20) NOT NULL,
     surname VARCHAR(20) NOT NULL,
-    password CHAR(12) NOT NULL
+    password VARCHAR(12) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS articles (
