@@ -4,14 +4,14 @@ import com.ecommerce.dto.ClientDTO;
 import com.ecommerce.exception.ClientNotFoundException;
 import com.ecommerce.model.Client;
 import com.ecommerce.service.interfaces.ClientFunctions;
+import com.ecommerce.utilities.JwtUtility;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -25,15 +25,24 @@ public class ClientController {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private JwtUtility jwtUtility;
+
     @GetMapping("client/{idClient}")
-    public ResponseEntity<ClientDTO> viewClient(@PathVariable("idClient") String idClient) throws ClientNotFoundException {
-        Optional<Client> client = clientFunctions.getClient(idClient);
-        ClientDTO clientDTO = convertToDTO(client, ClientDTO.class);
+    public ResponseEntity<ClientDTO> viewClient(@RequestHeader("Authorization") String token, @PathVariable("idClient") String idClient) throws ClientNotFoundException {
 
 
-        return client.isEmpty()
-                ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
-                : new ResponseEntity<>(clientDTO, HttpStatus.OK);
+            Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
+            //String clientId = claims.getSubject();
+
+            Optional<Client> client = clientFunctions.getClient(idClient);
+            ClientDTO clientDTO = convertToDTO(client, ClientDTO.class);
+
+
+            return client.isEmpty()
+                    ? ResponseEntity.notFound().build()
+                    : ResponseEntity.ok(clientDTO);
+
     }
 
     public <Entity, D> D convertToDTO(Entity entity, Class<D> dtoClass) {

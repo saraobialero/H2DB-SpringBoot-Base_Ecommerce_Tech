@@ -17,15 +17,14 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtility jwtUtility;
-
+   // private final Logger logger;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        //EXTRACT TOKEN FROM HEADER AUTH
         try {
             String token = extractToken(request);
 
-            if(token != null) {
+            if (token != null) {
                 Claims claims = jwtUtility.validateToken(token);
 
                 // Creare un'istanza di autenticazione e impostarla nel contesto di sicurezza
@@ -36,8 +35,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             }
         } catch (JwtException e) {
-            throw new RuntimeException(e);
+            // Log dell'errore JWT
+            //logger.error("Invalid JWT token: {}", e.getMessage());
+            // Restituisci una risposta 401 (Unauthorized)
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        } catch (RuntimeException e) {
+            // Log dell'errore interno del server
+            //logger.error("Internal server error: {}", e.getMessage());
+            // Restituisci una risposta 500 (Internal Server Error)
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
         }
+
         // Passa la richiesta al filtro successivo nella catena
         filterChain.doFilter(request, response);
     }
@@ -45,7 +55,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private String extractToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            //REMOVE BEARER
+            // Rimuovi "Bearer " dalla stringa del token
             return bearerToken.substring(7);
         }
         return null;
