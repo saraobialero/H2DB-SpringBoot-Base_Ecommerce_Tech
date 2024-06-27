@@ -1,6 +1,5 @@
 package com.ecommerce.service;
 
-import com.ecommerce.config.JwtConfig;
 import com.ecommerce.exception.ClientGenericsException;
 import com.ecommerce.exception.ClientNotFoundException;
 import com.ecommerce.exception.InvalidClientCodeException;
@@ -25,26 +24,25 @@ public class AuthService {
     private ClientFunctions clientFunctions;
 
     public AuthResponse authenticate(AuthRequest authRequest) throws InvalidClientCodeException, ClientNotFoundException, InvalidPasswordException, ClientGenericsException {
-        String idClient = authRequest.getIdClient();
+        String email = authRequest.getEmail();
         String password = authRequest.getPassword();
-        System.out.println(password);
-        System.out.println("Authenticating client: " + idClient);
+        System.out.println("Authenticating client: " + email);
 
-        boolean isAuthenticated = clientFunctions.login(idClient, password);
+        boolean isAuthenticated = clientFunctions.login(email, password);
         System.out.println("Is authenticated: " + isAuthenticated);
 
         if (isAuthenticated) {
-            Optional<Client> optClient = clientFunctions.getClient(idClient);
+            Optional<Client> optClient = clientFunctions.getClientByEmail(email);
             if (optClient.isPresent()) {
-                System.out.println("Client found for token generation: " + idClient);
+                System.out.println("Client found for token generation: " + email);
                 String token = jwtUtility.generateAccessToken(optClient.get());
                 return new AuthResponse(token);
             } else {
-                System.out.println("Client not found after authentication: " + idClient);
-                throw new ClientNotFoundException(idClient);
+                System.out.println("Client not found after authentication: " + email);
+                throw new ClientNotFoundException(email);
             }
         }
 
-        throw new InvalidPasswordException(idClient);
+        throw new InvalidPasswordException(email);
     }
 }

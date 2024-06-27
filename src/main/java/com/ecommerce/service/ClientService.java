@@ -19,14 +19,19 @@ public class ClientService implements ClientFunctions {
     private ClientRepository clientRepository;
 
     @Override
-    public boolean login(String idClient, String password) throws InvalidClientCodeException, ClientNotFoundException, InvalidPasswordException, ClientGenericsException {
+    public boolean login(String email, String password) throws InvalidClientCodeException, ClientNotFoundException, InvalidPasswordException, ClientGenericsException {
 
         try {
-            Client client = getClient(idClient).orElseThrow(() -> new ClientNotFoundException(idClient));
-            if (!client.getIdClient().equals(idClient)) throw new InvalidClientCodeException(idClient);
-            System.out.println(client.getIdClient());
-            if (!client.getPassword().equals(password)) throw new InvalidPasswordException(idClient);
-            System.out.println(client.getPassword());
+            Client client = getClientByEmail(email).orElseThrow(() -> new ClientNotFoundException("Client not found for email: " + email));
+
+            if (!client.getEmail().equals(email)) {
+                throw new InvalidClientCodeException("Invalid email: " + email);
+            }
+
+            if (!client.getPassword().equals(password)) {
+                throw new InvalidPasswordException("Invalid password for email: " + email);
+            }
+
         } catch (ClientNotFoundException | InvalidPasswordException | InvalidClientCodeException e) {
             throw e;
         } catch (Exception e) {
@@ -38,8 +43,19 @@ public class ClientService implements ClientFunctions {
     @Override
     public Optional<Client> getClient(String idClient) throws ClientNotFoundException {
         Optional<Client> client = clientRepository.findById(idClient);
-        if(client.isEmpty()) {
-            throw new ClientNotFoundException(idClient);
+        if (client.isEmpty()) {
+            throw new ClientNotFoundException("Client not found with ID: " + idClient);
+        }
+        return client;
+    }
+
+
+
+    @Override
+    public Optional<Client> getClientByEmail(String email) throws ClientNotFoundException {
+        Optional<Client> client = clientRepository.findByEmail(email);
+        if (client.isEmpty()) {
+            throw new ClientNotFoundException("Client not found with email: " + email);
         }
         return client;
     }

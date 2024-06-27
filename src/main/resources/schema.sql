@@ -7,7 +7,7 @@ DROP TABLE clients IF EXISTS;
 -- Definizione delle tabelle
 CREATE TABLE IF NOT EXISTS clients (
     id_client CHAR(36) PRIMARY KEY,
-    email VARCHAR(36) NOT NULL,
+    email VARCHAR(36) NOT NULL UNIQUE,
     name VARCHAR(20) NOT NULL,
     surname VARCHAR(20) NOT NULL,
     password VARCHAR(12) NOT NULL
