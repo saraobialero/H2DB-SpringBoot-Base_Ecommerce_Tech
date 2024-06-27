@@ -1,5 +1,5 @@
 -- Ordine corretto per eliminare le tabelle
-DROP TABLE carts_articles IF EXISTS;
+DROP TABLE articles_has_carts IF EXISTS;
 DROP TABLE carts IF EXISTS;
 DROP TABLE articles IF EXISTS;
 DROP TABLE clients IF EXISTS;
@@ -7,6 +7,7 @@ DROP TABLE clients IF EXISTS;
 -- Definizione delle tabelle
 CREATE TABLE IF NOT EXISTS clients (
     id_client CHAR(36) PRIMARY KEY,
+    email VARCHAR(36) NOT NULL,
     name VARCHAR(20) NOT NULL,
     surname VARCHAR(20) NOT NULL,
     password CHAR(12) NOT NULL
@@ -29,7 +30,7 @@ CREATE TABLE IF NOT EXISTS carts (
     FOREIGN KEY (id_client) REFERENCES clients(id_client)
 );
 
-CREATE TABLE IF NOT EXISTS carts_articles (
+CREATE TABLE IF NOT EXISTS articles_has_carts (
     id_cart CHAR(36),
     id_article CHAR(36),
     quantity INT NOT NULL,

@@ -9,9 +9,9 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "carts_articles")
-@IdClass(CartsArticlesId.class)
-public class CartsArticles implements Serializable {
+@Table(name = "articles_has_carts")
+@IdClass(CartArticleId.class)
+public class CartArticle implements Serializable {
     @Id
     @Column(name= "id_cart")
     String idCart;

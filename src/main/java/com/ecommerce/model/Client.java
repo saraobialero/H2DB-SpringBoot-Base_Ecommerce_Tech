@@ -18,6 +18,9 @@ public class Client implements Serializable {
     @Column (name = "name")
     private String name;
 
+    @Column (name = "email")
+    private String email;
+
     @Column (name = "surname")
     private String surname;
 

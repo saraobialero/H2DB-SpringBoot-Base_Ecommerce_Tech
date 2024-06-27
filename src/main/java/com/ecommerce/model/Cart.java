@@ -33,7 +33,7 @@ public class Cart implements Serializable {
     //RELATION MANY-TO-MANY: MORE ARTICLES FOR MORE CARTS
     @ManyToMany
     @JoinTable(
-            name = "carts_articles",
+            name = "articles_has_carts",
             joinColumns = @JoinColumn(name="id_cart"),
             inverseJoinColumns = @JoinColumn(name="id_article")
     )

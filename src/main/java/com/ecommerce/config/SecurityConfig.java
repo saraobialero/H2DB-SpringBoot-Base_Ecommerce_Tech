@@ -21,6 +21,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .requestMatchers(
                         "/ecommerce/api/v1/auth/login",
+                        "/ecommerce/api/v1/**",
                         "/h2-console/**",
                         "/v2/api-docs/**",
                         "/v3/api-docs/**",

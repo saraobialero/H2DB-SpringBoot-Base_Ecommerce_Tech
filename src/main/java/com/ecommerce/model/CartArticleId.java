@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
-public class CartsArticlesId implements Serializable {
+public class CartArticleId implements Serializable {
     private String idCart;
     private String idArticle;
 }
