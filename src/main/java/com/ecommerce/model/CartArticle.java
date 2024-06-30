@@ -10,18 +10,12 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Entity
 @Table(name = "articles_has_carts")
-@IdClass(CartArticleId.class)
 public class CartArticle implements Serializable {
-    @Id
-    @Column(name= "id_cart")
-    String idCart;
-
-    @Id
-    @Column(name= "id_article")
-    String idArticle;
+    @EmbeddedId
+    private CartArticleId id;
 
     @Column (name = "quantity")
     private int quantity ;
 
+    }
 
-}

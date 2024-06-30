@@ -4,6 +4,7 @@ import com.ecommerce.exception.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -34,26 +35,32 @@ public class ControllerCustomizedResponseEntityException extends ResponseEntityE
     public final ResponseEntity<Object> handleClientGenericsException(ClientGenericsException ex, WebRequest request) {
         return buildResponseEntity(ex, request, HttpStatus.BAD_REQUEST);
     }
- /*
-    // ORDER EXCEPTION
-    @ExceptionHandler(OrderAlreadyConfirmedException.class)
-    public final ResponseEntity<Object> handleOrderAlreadyConfirmedException(OrderAlreadyConfirmedException ex, WebRequest request) {
-        return buildResponseEntity(ex, request, HttpStatus.BAD_REQUEST);
+
+    //CART EXCEPTION
+    @ExceptionHandler(NoCartsForClientException.class)
+    public final ResponseEntity<Object> handleNoCartsForClientException(NoCartsForClientException ex, WebRequest request) {
+        return buildResponseEntity(ex, request, HttpStatus.NO_CONTENT);
     }
 
-    @ExceptionHandler(OrderNotFoundException.class)
-    public final ResponseEntity<Object> handleOrderNotFoundException(OrderNotFoundException ex, WebRequest request) {
+    @ExceptionHandler(CartNotFoundException.class)
+    public final ResponseEntity<Object> handleCartNotFoundException(CartNotFoundException ex, WebRequest request) {
         return buildResponseEntity(ex, request, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(NoOrderForClientException.class)
-    public final ResponseEntity<Object> handleNoOrderForClientException(NoOrderForClientException ex, WebRequest request) {
-        return buildResponseEntity(ex, request, HttpStatus.NO_CONTENT);
+
+    @ExceptionHandler(CartAlreadyClosedException.class)
+    public final ResponseEntity<Object> handleCartAlreadyClosedException(CartAlreadyClosedException ex, WebRequest request) {
+        return buildResponseEntity(ex, request, HttpStatus.BAD_REQUEST);
     }
-    */
+
+    @ExceptionHandler(CartAlreadySavedException.class)
+    public final ResponseEntity<Object> handleCartAlreadySavedException(CartAlreadySavedException ex, WebRequest request) {
+        return buildResponseEntity(ex, request, HttpStatus.BAD_REQUEST);
+    }
 
 
-    // Build ResponseEntyty to reduce boilerPlate
+
+    // BUILD RESPONSE ENTITY TO REDUCE BOILER PLATE
     private ResponseEntity<Object> buildResponseEntity(Exception ex, WebRequest request, HttpStatus status) {
         ExceptionResponse exResp = new ExceptionResponse(new Date(),
                                         ex.getMessage(),

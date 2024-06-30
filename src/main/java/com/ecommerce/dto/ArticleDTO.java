@@ -9,6 +9,6 @@ public class ArticleDTO {
     String idArticle;
     private String nameArticle;
     private String description;
-    private int quantity ;
+    private int availableQuantity;
     private double price;
 }

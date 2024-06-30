@@ -25,8 +25,8 @@ public class Article implements Serializable {
     @Column (name = "description")
     private String description;
 
-    @Column (name = "quantity")
-    private int quantity ;
+    @Column (name = "available_quantity")
+    private int availableQuantity;
 
     @Column (name = "price")
     private double price;

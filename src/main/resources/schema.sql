@@ -13,19 +13,20 @@ CREATE TABLE IF NOT EXISTS clients (
     password VARCHAR(12) NOT NULL
 );
 
+
 CREATE TABLE IF NOT EXISTS articles (
     id_article CHAR(36) PRIMARY KEY,
     name_article VARCHAR(20) NOT NULL,
     description VARCHAR(100) NOT NULL,
-    quantity INT NOT NULL,
+    available_quantity INT NOT NULL,
     price DOUBLE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS carts (
     id_cart CHAR(36) PRIMARY KEY,
     id_client CHAR(36) NOT NULL,
-    payment_type ENUM('CREDIT_CARD', 'GOOGLE_PAY', 'PAYPAL', 'BANK_TRANSFER') NOT NULL,
-    state ENUM('IN_PROGRESS', 'UPDATED', 'SAVED') NOT NULL,
+    payment_type ENUM('NOT_DEFINED','CREDIT_CARD', 'GOOGLE_PAY', 'PAYPAL', 'BANK_TRANSFER'),
+    state ENUM('IN_PROGRESS', 'UPDATED', 'SAVED', 'CLOSED') NOT NULL,
     total_price DOUBLE NOT NULL,
     FOREIGN KEY (id_client) REFERENCES clients(id_client)
 );

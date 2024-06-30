@@ -1,6 +1,7 @@
 package com.ecommerce.model;
 
 import com.ecommerce.model.enums.PaymentType;
+import com.ecommerce.model.enums.State;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,17 +19,21 @@ public class Cart implements Serializable {
     @Column(name= "id_cart")
     String idCart;
 
-    //RELATION ONE-TO-ONE: SINGLE CART FOR CLIENT
-    @OneToOne
-    @JoinColumn (name = "id_client", referencedColumnName = "id_client")
+    //MANY TO ONE FOR HISTORY
+    @ManyToOne
+    @JoinColumn(name = "id_client", referencedColumnName = "id_client")
     private Client client;
 
     @Enumerated(EnumType.STRING)
     @Column (name = "payment_type")
     private PaymentType paymentType;
 
+    @Enumerated(EnumType.STRING)
+    @Column (name = "state")
+    private State state;
+
     @Column (name = "total_price")
-    private int totalPrice;
+    private double totalPrice;
 
     //RELATION MANY-TO-MANY: MORE ARTICLES FOR MORE CARTS
     @ManyToMany
@@ -38,6 +43,7 @@ public class Cart implements Serializable {
             inverseJoinColumns = @JoinColumn(name="id_article")
     )
     private Set<Article> articles = new HashSet<>();
+
 
 
 

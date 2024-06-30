@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public enum State {
     IN_PROGRESS,
     UPDATED,
-    SAVED
+    SAVED,
+    CLOSED
 
 }
