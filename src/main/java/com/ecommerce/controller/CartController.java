@@ -47,12 +47,12 @@ public class CartController {
     private JwtUtility jwtUtility;
 
 
-    @GetMapping("carts/client/{idClient}")
+    @GetMapping("carts/client/{email}")
     public ResponseEntity<List<CartDTO>> viewCartsForClient(@RequestHeader("Authorization") String token,
-                                                   @PathVariable("idClient") String idClient ) throws ClientNotFoundException, NoCartsForClientException {
+                                                            @PathVariable("email") String email ) throws ClientNotFoundException, NoCartsForClientException {
         Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
 
-        List<Cart> carts = cartFunctions.viewClientCarts(idClient);
+        List<Cart> carts = cartFunctions.viewClientCarts(email);
         List<CartDTO> cartsDTO = carts.stream()
                 .map(this::convertToCartDTO) // Utilizza convertToCartDTO invece di convertToDTO
                 .collect(Collectors.toList());

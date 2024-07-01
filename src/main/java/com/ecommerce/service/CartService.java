@@ -98,12 +98,14 @@ public class CartService implements CartFunctions {
 
 
     @Override
-    public List<Cart> viewClientCarts(String idClient) throws ClientNotFoundException, NoCartsForClientException {
-        Optional<Client> client = clientService.getClient(idClient);
+    public List<Cart> viewClientCarts(String email) throws ClientNotFoundException, NoCartsForClientException {
+        Optional<Client> client = clientService.getClient(email);
         if (client.isEmpty()) throw new ClientNotFoundException("Client not found");
 
+        String idClient = client.get().getIdClient();
+
         List<Cart> carts = cartRepository.findAllByClientId(idClient);
-        if (carts.isEmpty()) throw new NoCartsForClientException(idClient);
+        if (carts.isEmpty()) throw new NoCartsForClientException(email);
 
         return carts;
     }
@@ -151,6 +153,16 @@ public class CartService implements CartFunctions {
     @Override
     public List<CartArticle> getCartArticlesByCartId(String idCart) {
         return cartArticleRepository.findByIdCart(idCart);
+    }
+
+    @Override
+    public boolean deleteArticle(String idArticle) {
+        return false;
+    }
+
+    @Override
+    public boolean deleteCart(String idCart) {
+        return false;
     }
 
 

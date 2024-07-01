@@ -41,10 +41,10 @@ public class ClientService implements ClientFunctions {
     }
 
     @Override
-    public Optional<Client> getClient(String idClient) throws ClientNotFoundException {
-        Optional<Client> client = clientRepository.findById(idClient);
+    public Optional<Client> getClient(String email) throws ClientNotFoundException {
+        Optional<Client> client = clientRepository.findByEmail(email);
         if (client.isEmpty()) {
-            throw new ClientNotFoundException("Client not found with ID: " + idClient);
+            throw new ClientNotFoundException("Client not found, email:" + email);
         }
         return client;
     }

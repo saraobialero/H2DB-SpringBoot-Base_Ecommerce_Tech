@@ -1,6 +1,6 @@
 -- Inserimento dei clients
 INSERT INTO clients (id_client, email, name, surname, password) VALUES
-('b12b0459-9daa-4c07-9b2f-40dd0cfa5ff4', 'john.dow@email.com', 'John', 'Doe', 'Hsf45gt6'),
+('b12b0459-9daa-4c07-9b2f-40dd0cfa5ff4', 'john@gmail.com', 'John', 'Doe', '12f45gt6'),
 ('b12b0459-9daa-4c07-9b2f-40dd0cfa5ff5', 'jane.dow@email.com', 'Jane', 'Doe', 'Sdrft65w'),
 ('b12b0459-9daa-4c07-9b2f-40dd0cfa5ff2', 'emily.dow@email.com', 'Emily', 'Brown', '78rft65w'),
 ('b12b1459-9daa-4c07-9b2f-40dd0cfa5fs8', 'david.gray@email.com', 'David', 'Gray', '78rft695');

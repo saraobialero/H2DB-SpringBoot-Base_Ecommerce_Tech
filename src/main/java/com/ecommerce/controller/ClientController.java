@@ -28,14 +28,13 @@ public class ClientController {
     @Autowired
     private JwtUtility jwtUtility;
 
-    @GetMapping("client/{idClient}")
-    public ResponseEntity<ClientDTO> viewClient(@RequestHeader("Authorization") String token, @PathVariable("idClient") String idClient) throws ClientNotFoundException {
+    @GetMapping("client/{email}")
+    public ResponseEntity<ClientDTO> viewClient(@RequestHeader("Authorization") String token, @PathVariable("email") String email) throws ClientNotFoundException {
 
 
             Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
-            //String clientId = claims.getSubject();
 
-            Optional<Client> client = clientFunctions.getClient(idClient);
+            Optional<Client> client = clientFunctions.getClient(email);
             ClientDTO clientDTO = convertToDTO(client, ClientDTO.class);
 
 
