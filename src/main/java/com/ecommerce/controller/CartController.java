@@ -62,30 +62,11 @@ public class CartController {
                 : ResponseEntity.ok(cartsDTO);
 
     }
-    //TODO: TEST (REMOVE)
-    @GetMapping("carts/{idCart}")
-    public ResponseEntity<CartDTO> viewCart(@RequestHeader("Authorization") String token,
-                                            @PathVariable("idCart") String idCart) {
-        Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
-
-        // Recupera il carrello usando il suo ID
-        Optional<Cart> optionalCart = cartRepository.findByIdCart(idCart);
-
-        // Verifica se il carrello è presente
-        if (optionalCart.isPresent()) {
-            Cart cart = optionalCart.get();
-            CartDTO cartDTO = convertToCartDTO(cart);
-            return ResponseEntity.ok(cartDTO);
-        } else {
-            // Restituisci un 404 Not Found se il carrello non è presente
-            return ResponseEntity.notFound().build();
-        }
-    }
 
     @PostMapping("cart/{idClient}/{idArticle}/{quantity}")
     public ResponseEntity<Void> addArticleToCarts(@RequestHeader("Authorization") String token,
-                                                  @PathVariable("idClient") String idClient,
-                                                  @PathVariable("idArticle") String idArticle,
+                                                  @PathVariable("idClient") int idClient,
+                                                  @PathVariable("idArticle") int idArticle,
                                                   @PathVariable("quantity") int quantity) throws ClientNotFoundException, ArticleNotFoundException, InsufficientQuantityException {
         Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
 
@@ -97,7 +78,7 @@ public class CartController {
 
     @PatchMapping("/cart/state/{idCart}")
     public ResponseEntity<Void> saveCart(@RequestHeader("Authorization") String token,
-                                        @PathVariable("idCart") String idCart) throws CartNotFoundException, CartAlreadyClosedException, CartAlreadySavedException {
+                                        @PathVariable("idCart") int idCart) throws CartNotFoundException, CartAlreadyClosedException, CartAlreadySavedException {
         Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
         cartFunctions.saveCart(idCart);
         return ResponseEntity.ok().build();
@@ -105,12 +86,12 @@ public class CartController {
 
     @PostMapping("/cart/close/{idCart}")
     public ResponseEntity<CartDTO> closeCart(@RequestHeader("Authorization") String token,
-                                             @PathVariable("idCart") String idCart,
+                                             @PathVariable("idCart") int idCart,
                                              @RequestBody PaymentRequest paymentRequest) throws CartAlreadyClosedException, ArticleNotFoundException, CartNotFoundException {
         Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
 
         Cart cart = cartFunctions.closeCart(idCart, paymentRequest.getPaymentType()).orElseThrow(
-                () -> new CartNotFoundException("Cart not found with id: " + idCart)
+                () -> new CartNotFoundException(idCart)
         );
         CartDTO cartDTO = convertToCartDTO(cart);
         return ResponseEntity.ok(cartDTO);

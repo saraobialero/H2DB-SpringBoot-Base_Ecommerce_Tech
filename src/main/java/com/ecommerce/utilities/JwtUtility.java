@@ -24,8 +24,8 @@ public class JwtUtility {
     public String buildToken (Map<String, Object> claims, Client client, Integer expiration) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setId(client.getIdClient())
-                .setSubject(client.getIdClient())
+                .setId(client.getEmail())
+                .setSubject(client.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignToken(), io.jsonwebtoken.SignatureAlgorithm.HS256)

@@ -1,7 +1,7 @@
 package com.ecommerce.exception;
 
 public class CartNotFoundException extends Exception {
-    public CartNotFoundException(String idCart) {
+    public CartNotFoundException(int idCart) {
         super("Cart with  " + idCart + " not found");
     }
 }

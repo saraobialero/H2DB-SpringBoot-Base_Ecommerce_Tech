@@ -34,7 +34,7 @@ public class ClientController {
 
             Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
 
-            Optional<Client> client = clientFunctions.getClient(email);
+            Optional<Client> client = clientFunctions.getClientByEmail(email);
             ClientDTO clientDTO = convertToDTO(client, ClientDTO.class);
 
 

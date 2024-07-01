@@ -9,19 +9,19 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface CartRepository extends JpaRepository<Cart, String> {
+public interface CartRepository extends JpaRepository<Cart, Integer> {
 
     @Query("SELECT c FROM Cart c WHERE c.client.idClient = :idClient")
-    List<Cart> findAllByClientId(@Param("idClient") String idClient);
+    List<Cart> findAllByClientId(@Param("idClient") int idClient);
 
     @Query("SELECT c FROM Cart c WHERE c.idCart = :idCart")
-    Optional<Cart> findByIdCart(@Param("idCart") String idCart);
-
+    Optional<Cart> findByIdCart(@Param("idCart") int idCart);
+/*
     @Query("SELECT c FROM Cart c WHERE c.client.idClient = :idClient AND c.state != :state")
-    Optional<Cart> findActiveCartByClientIdAndStateNot(@Param("idClient") String idClient, @Param("state") State state);
+    Optional<Cart> findActiveCartByClientIdAndStateNot(@Param("idClient") int idClient, @Param("state") State state);
 
     @Query("SELECT c FROM Cart c WHERE c.idCart = :idCart AND c.state != :state")
-    Optional<Cart> findActiveCartByCartIdAndStateNot(@Param("idCart") String idCart, @Param("state") State state);
-
+    Optional<Cart> findActiveCartByCartIdAndStateNot(@Param("idCart") int idCart, @Param("state") State state);
+*/
 
 }

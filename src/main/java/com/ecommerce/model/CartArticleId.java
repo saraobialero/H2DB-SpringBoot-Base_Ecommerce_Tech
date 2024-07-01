@@ -14,9 +14,9 @@ import java.io.Serializable;
 @Embeddable
 public class CartArticleId implements Serializable {
     @Column(name = "id_cart")
-    private String idCart;
+    private int idCart;
 
     @Column(name = "id_article")
-    private String idArticle;
+    private int idArticle;
 
 }

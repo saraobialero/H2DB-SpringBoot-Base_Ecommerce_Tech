@@ -40,15 +40,6 @@ public class ClientService implements ClientFunctions {
         return true;
     }
 
-    @Override
-    public Optional<Client> getClient(String email) throws ClientNotFoundException {
-        Optional<Client> client = clientRepository.findByEmail(email);
-        if (client.isEmpty()) {
-            throw new ClientNotFoundException("Client not found, email:" + email);
-        }
-        return client;
-    }
-
 
 
     @Override
@@ -56,6 +47,15 @@ public class ClientService implements ClientFunctions {
         Optional<Client> client = clientRepository.findByEmail(email);
         if (client.isEmpty()) {
             throw new ClientNotFoundException("Client not found with email: " + email);
+        }
+        return client;
+    }
+
+    @Override
+    public Optional<Client> getClientById(int idClient) throws ClientNotFoundException {
+        Optional<Client> client = clientRepository.findById(idClient);
+        if (client.isEmpty()) {
+            throw new ClientNotFoundException("Client not found: " + idClient);
         }
         return client;
     }

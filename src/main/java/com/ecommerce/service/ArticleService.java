@@ -17,7 +17,7 @@ public class ArticleService implements ArticleFunctions {
     private ArticleRepository articleRepository;
 
     @Override
-    public Optional<Article> existArticle(String idArticle) throws ArticleNotFoundException {
+    public Optional<Article> existArticle(int idArticle) throws ArticleNotFoundException {
         Optional<Article> article = articleRepository.findById(idArticle);
         if(article.isEmpty()) throw new ArticleNotFoundException("Article not found");
         return article;
@@ -29,7 +29,7 @@ public class ArticleService implements ArticleFunctions {
     }
 
     @Override
-    public Optional<Article> getArticleById(String idArticle) {
+    public Optional<Article> getArticleById(int idArticle) {
         return articleRepository.findById(idArticle);
     }
 }

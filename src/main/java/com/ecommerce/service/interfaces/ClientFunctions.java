@@ -9,7 +9,9 @@ import com.ecommerce.model.Client;
 import java.util.Optional;
 
 public interface ClientFunctions {
-    boolean login(String idClient, String password) throws InvalidClientCodeException, ClientNotFoundException, InvalidPasswordException, ClientGenericsException;
-    Optional<Client> getClient(String idClient) throws ClientNotFoundException;
+    boolean login(String email, String password) throws InvalidClientCodeException, ClientNotFoundException, InvalidPasswordException, ClientGenericsException;
+    //Optional<Client> getClient(int idClient) throws ClientNotFoundException;
     Optional<Client> getClientByEmail(String email) throws ClientNotFoundException;
+
+    Optional<Client> getClientById(int idClient) throws ClientNotFoundException;
 }

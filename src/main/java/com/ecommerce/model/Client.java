@@ -12,8 +12,9 @@ import java.io.Serializable;
 @Table(name = "clients")
 public class Client implements Serializable {
     @Id
-    @Column(name= "id_client")
-    String idClient;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name= "id")
+    int idClient;
 
     @Column (name = "name")
     private String name;

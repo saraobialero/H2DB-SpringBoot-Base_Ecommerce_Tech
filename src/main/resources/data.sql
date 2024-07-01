@@ -1,26 +1,29 @@
--- Inserimento dei clients
-INSERT INTO clients (id_client, email, name, surname, password) VALUES
-('b12b0459-9daa-4c07-9b2f-40dd0cfa5ff4', 'john@gmail.com', 'John', 'Doe', '12f45gt6'),
-('b12b0459-9daa-4c07-9b2f-40dd0cfa5ff5', 'jane.dow@email.com', 'Jane', 'Doe', 'Sdrft65w'),
-('b12b0459-9daa-4c07-9b2f-40dd0cfa5ff2', 'emily.dow@email.com', 'Emily', 'Brown', '78rft65w'),
-('b12b1459-9daa-4c07-9b2f-40dd0cfa5fs8', 'david.gray@email.com', 'David', 'Gray', '78rft695');
+-- Insert statements for clients
+INSERT INTO clients (email, name, surname, password, enable) VALUES
+('john.doe@example.com', 'John', 'Doe', 'password123', 1),
+('jane.smith@example.com', 'Jane', 'Smith', 'password456', 1),
+('alice.johnson@example.com', 'Alice', 'Johnson', 'password789', 0);
 
+-- Insert statements for articles
+INSERT INTO articles (name, description, available_quantity, price) VALUES
+('Laptop', 'High-performance laptop', 10, 999.99),
+('Smartphone', 'Latest model smartphone', 25, 699.99),
+('Headphones', 'Noise-cancelling headphones', 50, 199.99);
 
--- Inserimento degli articles
-INSERT INTO articles (id_article, name_article, description, available_quantity, price) VALUES
-('a12b0459-9daa-4c07-9b2f-40dd0cfa5ff4', 'Laptop', 'High performance laptop', 50, 999.99),
-('a12b0459-9daa-4c07-9b2f-40dd0cfa5hg5', 'Smartphone', 'Latest model smartphone', 100, 699.99),
-('a12b0459-9daa-4c07-9b2f-40dd0cfa3fg9', 'Smartwatch', 'Latest model smartwatch', 200, 399.99);
+-- Insert statements for carts
+INSERT INTO carts (id_client, total_price) VALUES
+(1, 199.00),
+(2, 299.99),
+(3, 499.99);
 
--- Inserimento dei carts
-INSERT INTO carts (id_cart, id_client, payment_type, state, total_price) VALUES
-('c12b0459-9daa-4c07-9b2f-40dd0cfa5ff4', 'b12b0459-9daa-4c07-9b2f-40dd0cfa5ff4', 'CREDIT_CARD', 'IN_PROGRESS', 0.0),
-('c12b0459-9daa-4c07-9b2f-40dd0cfa5ff5', 'b12b0459-9daa-4c07-9b2f-40dd0cfa5ff5', 'PAYPAL', 'IN_PROGRESS', 0.0),
-('c12b0459-9daa-4c07-9b2f-40dd0cfa9sa1', 'b12b1459-9daa-4c07-9b2f-40dd0cfa5fs8', 'PAYPAL', 'CLOSED', 399.99);
-
--- Inserimento dei articoli nei carts
+-- Insert statements for articles_has_carts
 INSERT INTO articles_has_carts (id_cart, id_article, quantity) VALUES
-('c12b0459-9daa-4c07-9b2f-40dd0cfa5ff4', 'a12b0459-9daa-4c07-9b2f-40dd0cfa5ff4', 1),
-('c12b0459-9daa-4c07-9b2f-40dd0cfa5ff4', 'a12b0459-9daa-4c07-9b2f-40dd0cfa5hg5', 2),
-('c12b0459-9daa-4c07-9b2f-40dd0cfa5ff5', 'a12b0459-9daa-4c07-9b2f-40dd0cfa5ff4', 1),
-('c12b0459-9daa-4c07-9b2f-40dd0cfa9sa1', 'a12b0459-9daa-4c07-9b2f-40dd0cfa3fg9', 1);
+(1, 1, 1),
+(1, 2, 2),
+(2, 3, 1);
+
+-- Insert statements for orders
+INSERT INTO orders (id_cart, id_client, state, payment_type) VALUES
+(1, 1, 'CONFIRMED', 'CREDIT_CARD'),
+(2, 2, 'CLOSED', 'PAYPAL'),
+(3, 3, 'CONFIRMED', 'BANK_TRANSFER');

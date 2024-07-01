@@ -45,10 +45,10 @@ public class CartService implements CartFunctions {
 
     @Transactional
     @Override
-    public boolean addArticleToCart(String idClient, String idArticle, int quantity) throws ClientNotFoundException, ArticleNotFoundException, InsufficientQuantityException {
+    public boolean addArticleToCart(int idClient, int idArticle, int quantity) throws ClientNotFoundException, ArticleNotFoundException, InsufficientQuantityException {
 
         // GET CLIENT FROM CLIENT REPOSITORY
-        Client client = clientService.getClient(idClient)
+        Client client = clientService.getClientById(idClient)
                 .orElseThrow(() -> new ClientNotFoundException("Client with " + idClient + " not found"));
 
         // FIND THE ARTICLE FROM ARTICLE REPOSITORY
@@ -59,15 +59,14 @@ public class CartService implements CartFunctions {
         if (quantity > article.getAvailableQuantity()) {
             throw new InsufficientQuantityException();
         }
-
+        /*
         // CHECK IF CLIENT ALREADY HAS 'IN_PROGRESS' CART (NOT: 'CLOSED')
         Cart cart = cartRepository.findActiveCartByClientIdAndStateNot(idClient, State.CLOSED)
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
-                    newCart.setIdCart(UUID.randomUUID().toString());
+                    //newCart.setIdCart(); AUTOINCREMENT
                     newCart.setClient(client);
-                    newCart.setState(State.IN_PROGRESS);
-                    newCart.setPaymentType(PaymentType.NOT_DEFINED);
+                    //newCart.setPaymentType(PaymentType.NOT_DEFINED);
                     newCart.setTotalPrice(0); //INITIALIZE
                     return cartRepository.save(newCart);
                 });
@@ -91,7 +90,7 @@ public class CartService implements CartFunctions {
 
         // UPDATE TOTAL PRICE OF THE CART
         cart.setTotalPrice(cart.getTotalPrice() + (article.getPrice() * quantity));
-        cartRepository.save(cart);
+        cartRepository.save(cart); */
 
         return true;
     }
@@ -99,10 +98,10 @@ public class CartService implements CartFunctions {
 
     @Override
     public List<Cart> viewClientCarts(String email) throws ClientNotFoundException, NoCartsForClientException {
-        Optional<Client> client = clientService.getClient(email);
+        Optional<Client> client = clientService.getClientByEmail(email);
         if (client.isEmpty()) throw new ClientNotFoundException("Client not found");
 
-        String idClient = client.get().getIdClient();
+        int idClient = client.get().getIdClient();
 
         List<Cart> carts = cartRepository.findAllByClientId(idClient);
         if (carts.isEmpty()) throw new NoCartsForClientException(email);
@@ -112,10 +111,10 @@ public class CartService implements CartFunctions {
 
     @Transactional
     @Override
-    public boolean saveCart(String idCart) throws CartNotFoundException, CartAlreadyClosedException, CartAlreadySavedException {
+    public boolean saveCart(int idCart) throws CartNotFoundException, CartAlreadyClosedException, CartAlreadySavedException {
         Cart cart = cartRepository.findByIdCart(idCart)
                 .orElseThrow(() -> new CartNotFoundException(idCart));
-
+/*
         //CHECK STATE
         if (cart.getState().equals(State.CLOSED)) {
             throw new CartAlreadyClosedException("Cart already closed");
@@ -124,44 +123,45 @@ public class CartService implements CartFunctions {
         }
 
         //UPDATE CART STATUS
-        cart.setState(State.SAVED);
+        cart.setState(State.SAVED);*/
         cartRepository.save(cart);
         return true;
     }
 
     @Transactional
     @Override
-    public Optional<Cart> closeCart(String idCart, PaymentType paymentType) throws CartAlreadyClosedException, ArticleNotFoundException {
-        Cart cart = cartRepository.findActiveCartByCartIdAndStateNot(idCart, State.CLOSED)
+    public Optional<Cart> closeCart(int idCart, PaymentType paymentType) throws CartAlreadyClosedException, ArticleNotFoundException {
+    /*    Cart cart = cartRepository.findActiveCartByCartIdAndStateNot(idCart, State.CLOSED)
                 .orElseThrow(() -> new CartAlreadyClosedException("Cart already closed"));
-        cart.setState(State.CLOSED);
-        cart.setPaymentType(paymentType);
+    //    cart.setState(State.CLOSED);
+   //     cart.setPaymentType(paymentType);
 
         //FIND CART ARTICLE ASSOCIATED
         List<CartArticle> cartArticles = cartArticleRepository.findByIdCart(idCart);
         for (CartArticle cartArticle : cartArticles) {
-            String idArticle = cartArticle.getId().getIdArticle();
+            int idArticle = cartArticle.getId().getIdArticle();
             Article article = articleRepository.findById(idArticle).orElseThrow(() -> new ArticleNotFoundException("Article not found"));
             article.setAvailableQuantity(article.getAvailableQuantity() - cartArticle.getQuantity());
             articleRepository.save(article);
         }
 
         cartRepository.save(cart);
-        return Optional.of(cart);
+        return Optional.of(cart);*/
+        return Optional.empty();
     }
 
     @Override
-    public List<CartArticle> getCartArticlesByCartId(String idCart) {
-        return cartArticleRepository.findByIdCart(idCart);
+    public List<CartArticle> getCartArticlesByCartId(int idCart) {
+        return List.of();
     }
 
     @Override
-    public boolean deleteArticle(String idArticle) {
+    public boolean deleteArticle(int idArticle) {
         return false;
     }
 
     @Override
-    public boolean deleteCart(String idCart) {
+    public boolean deleteCart(int idCart) {
         return false;
     }
 

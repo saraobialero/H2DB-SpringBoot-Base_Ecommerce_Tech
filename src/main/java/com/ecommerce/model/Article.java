@@ -1,9 +1,6 @@
 package com.ecommerce.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,11 +13,12 @@ import java.io.Serializable;
 public class Article implements Serializable {
 
     @Id
-    @Column(name= "id_article")
-    String idArticle;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name= "id")
+    int idArticle;
 
-    @Column (name = "name_article")
-    private String nameArticle;
+    @Column (name = "name")
+    private String name;
 
     @Column (name = "description")
     private String description;

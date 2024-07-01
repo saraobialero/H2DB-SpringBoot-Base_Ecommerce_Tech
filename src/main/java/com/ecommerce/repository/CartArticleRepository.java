@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface CartArticleRepository extends JpaRepository<CartArticle, CartArticleId> {
 
     @Query("SELECT ca FROM CartArticle ca WHERE ca.id.idCart = :idCart")
-    List<CartArticle> findByIdCart(@Param("idCart") String idCart);
+    List<CartArticle> findByIdCart(@Param("idCart") int idCart);
 }

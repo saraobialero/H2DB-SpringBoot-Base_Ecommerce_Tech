@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ArticleFunctions {
-    Optional<Article> existArticle(String idArticle) throws ArticleNotFoundException;
+    Optional<Article> existArticle(int idArticle) throws ArticleNotFoundException;
     List<Article> getArticles();
-    Optional<Article>getArticleById(String idArticle);
+    Optional<Article>getArticleById(int idArticle);
+
 }
