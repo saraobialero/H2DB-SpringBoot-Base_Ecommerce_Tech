@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .frameOptions(frameOptions -> frameOptions
                                 .disable()
                         )
-                );;
+                );
 
         //ADD JWT AUTHENTICATION FILTER
         http.addFilterBefore(new JwtAuthFilter(jwtUtility), UsernamePasswordAuthenticationFilter.class);

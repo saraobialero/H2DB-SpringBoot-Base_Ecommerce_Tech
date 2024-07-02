@@ -25,7 +25,7 @@ public class Cart implements Serializable {
     @JoinColumn(name = "id_client", referencedColumnName = "id")
     private Client client;
 
-    @OneToOne(mappedBy = "cart", cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST})
+    @OneToOne(mappedBy = "cart")
     private Order order;
 
     @Enumerated(EnumType.STRING)

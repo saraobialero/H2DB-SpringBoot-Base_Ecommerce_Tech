@@ -60,6 +60,11 @@ public class ControllerCustomizedResponseEntityException extends ResponseEntityE
 
     // ORDER EXCEPTION
 
+    @ExceptionHandler(OrderNotFoundException.class)
+    public final ResponseEntity<Object> handleOrderNotFoundException(OrderNotFoundException ex, WebRequest request) {
+        return buildResponseEntity(ex, request, HttpStatus.NOT_FOUND);
+    }
+
     // ARTICLE EXCEPTION
     @ExceptionHandler(ArticleNotFoundException.class)
     public final ResponseEntity<Object> handleArticleNotFoundException(ArticleNotFoundException ex, WebRequest request) {

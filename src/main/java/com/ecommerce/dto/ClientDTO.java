@@ -1,6 +1,6 @@
 package com.ecommerce.dto;
 
-import lombok.AllArgsConstructor;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ClientDTO {
 
-    private String idClient;
+    private int idClient;
     private String email;
     private String name;
     private String surname;
