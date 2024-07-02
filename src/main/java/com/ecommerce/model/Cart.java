@@ -16,18 +16,21 @@ import java.util.Set;
 @Table(name = "carts")
 public class Cart implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name= "id")
     int idCart;
 
-
-    @OneToOne
+    //MANY-TO-ONE RELATIONSHIP:
+    @ManyToOne
     @JoinColumn(name = "id_client", referencedColumnName = "id")
     private Client client;
 
-    @OneToOne
-    @JoinColumn(name = "id_order", referencedColumnName = "id")
+    @OneToOne(mappedBy = "cart", cascade = CascadeType.ALL)
     private Order order;
+
+    @Enumerated(EnumType.STRING)
+    @Column (name = "state")
+    private State state;
 
 
     @Column (name = "total_price")

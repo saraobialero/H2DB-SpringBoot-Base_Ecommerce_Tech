@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -28,8 +29,12 @@ public class Client implements Serializable {
     @Column (name = "password")
     private String password;
 
-    //RELATION ONE-TO-ONE: ONE CLIENT CAN HAVE ONE CART
+    //ONE-TO-ONE RELATIONSHIP: ONE CLIENT CAN HAVE ONE CART
     @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
     private Cart cart;
+
+    // RELATION ONE-TO-MANY: ONE CLIENT CAN HAVE MULTIPLE ORDERS
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    private List<Order> orders;
 
 }

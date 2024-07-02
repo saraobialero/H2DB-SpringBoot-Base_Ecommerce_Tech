@@ -1,12 +1,7 @@
 package com.ecommerce.service;
 
-import com.ecommerce.dto.ArticleDTO;
-import com.ecommerce.dto.CartArticleDTO;
-import com.ecommerce.dto.CartDTO;
 import com.ecommerce.exception.*;
 import com.ecommerce.model.*;
-import com.ecommerce.model.enums.PaymentType;
-import com.ecommerce.model.enums.State;
 import com.ecommerce.repository.ArticleRepository;
 import com.ecommerce.repository.CartArticleRepository;
 import com.ecommerce.repository.CartRepository;
@@ -18,9 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class CartService implements CartFunctions {
@@ -59,14 +51,13 @@ public class CartService implements CartFunctions {
         if (quantity > article.getAvailableQuantity()) {
             throw new InsufficientQuantityException();
         }
-        /*
-        // CHECK IF CLIENT ALREADY HAS 'IN_PROGRESS' CART (NOT: 'CLOSED')
-        Cart cart = cartRepository.findActiveCartByClientIdAndStateNot(idClient, State.CLOSED)
+
+        // CHECK IF CLIENT ALREADY HAS CART
+        Cart cart = cartRepository.findByIdClient(idClient)
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
-                    //newCart.setIdCart(); AUTOINCREMENT
+                //    newCart.setIdCart(6); //AUTOINCREMNT DOESN'T WORK
                     newCart.setClient(client);
-                    //newCart.setPaymentType(PaymentType.NOT_DEFINED);
                     newCart.setTotalPrice(0); //INITIALIZE
                     return cartRepository.save(newCart);
                 });
@@ -80,7 +71,7 @@ public class CartService implements CartFunctions {
                     CartArticle newCartArticle = new CartArticle();
                     newCartArticle.setId(cartArticleId);
                     newCartArticle.setQuantity(0); //INITIALIZE
-                    return cartArticleRepository.save(newCartArticle);
+                    return newCartArticle;
                 });
 
         // UPDATE QUANTITY IF THE ARTICLE IS ALREADY IN THE CART
@@ -90,21 +81,20 @@ public class CartService implements CartFunctions {
 
         // UPDATE TOTAL PRICE OF THE CART
         cart.setTotalPrice(cart.getTotalPrice() + (article.getPrice() * quantity));
-        cartRepository.save(cart); */
 
         return true;
     }
 
 
+
     @Override
-    public List<Cart> viewClientCarts(String email) throws ClientNotFoundException, NoCartsForClientException {
-        Optional<Client> client = clientService.getClientByEmail(email);
+    public List<Cart> viewClientCarts(int idClient) throws ClientNotFoundException, NoCartsForClientException {
+        Optional<Client> client = clientService.getClientById(idClient);
         if (client.isEmpty()) throw new ClientNotFoundException("Client not found");
 
-        int idClient = client.get().getIdClient();
 
         List<Cart> carts = cartRepository.findAllByClientId(idClient);
-        if (carts.isEmpty()) throw new NoCartsForClientException(email);
+        if (carts.isEmpty()) throw new NoCartsForClientException("No carts for client:" + idClient);
 
         return carts;
     }
@@ -114,45 +104,17 @@ public class CartService implements CartFunctions {
     public boolean saveCart(int idCart) throws CartNotFoundException, CartAlreadyClosedException, CartAlreadySavedException {
         Cart cart = cartRepository.findByIdCart(idCart)
                 .orElseThrow(() -> new CartNotFoundException(idCart));
-/*
-        //CHECK STATE
-        if (cart.getState().equals(State.CLOSED)) {
-            throw new CartAlreadyClosedException("Cart already closed");
-        } else if (cart.getState().equals(State.SAVED)) {
-            throw new CartAlreadySavedException("Cart already saved");
-        }
 
-        //UPDATE CART STATUS
-        cart.setState(State.SAVED);*/
+
+        //SAVE CART
         cartRepository.save(cart);
         return true;
     }
 
-    @Transactional
-    @Override
-    public Optional<Cart> closeCart(int idCart, PaymentType paymentType) throws CartAlreadyClosedException, ArticleNotFoundException {
-    /*    Cart cart = cartRepository.findActiveCartByCartIdAndStateNot(idCart, State.CLOSED)
-                .orElseThrow(() -> new CartAlreadyClosedException("Cart already closed"));
-    //    cart.setState(State.CLOSED);
-   //     cart.setPaymentType(paymentType);
-
-        //FIND CART ARTICLE ASSOCIATED
-        List<CartArticle> cartArticles = cartArticleRepository.findByIdCart(idCart);
-        for (CartArticle cartArticle : cartArticles) {
-            int idArticle = cartArticle.getId().getIdArticle();
-            Article article = articleRepository.findById(idArticle).orElseThrow(() -> new ArticleNotFoundException("Article not found"));
-            article.setAvailableQuantity(article.getAvailableQuantity() - cartArticle.getQuantity());
-            articleRepository.save(article);
-        }
-
-        cartRepository.save(cart);
-        return Optional.of(cart);*/
-        return Optional.empty();
-    }
 
     @Override
     public List<CartArticle> getCartArticlesByCartId(int idCart) {
-        return List.of();
+        return cartArticleRepository.findByIdCart(idCart);
     }
 
     @Override

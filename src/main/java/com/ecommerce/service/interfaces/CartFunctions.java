@@ -12,10 +12,11 @@ import java.util.Optional;
 public interface CartFunctions {
 
     boolean addArticleToCart(int idClient, int idArticle, int quantity) throws ClientNotFoundException, ArticleNotFoundException, InsufficientQuantityException;
-    List<Cart> viewClientCarts(String email) throws ClientNotFoundException, NoCartsForClientException;
+    List<Cart> viewClientCarts(int idClient) throws ClientNotFoundException, NoCartsForClientException;
     boolean saveCart(int idCart) throws CartNotFoundException, CartAlreadyClosedException, CartAlreadySavedException;
-    Optional<Cart> closeCart(int idCart, PaymentType paymentType) throws CartAlreadyClosedException, ArticleNotFoundException;
+
     List<CartArticle> getCartArticlesByCartId(int idCart);
+
     boolean deleteArticle(int idArticle); //idcart?
     boolean deleteCart(int idCart);
 }

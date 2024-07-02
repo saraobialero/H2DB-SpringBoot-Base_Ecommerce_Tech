@@ -29,8 +29,8 @@ public class ClientController {
     private JwtUtility jwtUtility;
 
     @GetMapping("client/{email}")
-    public ResponseEntity<ClientDTO> viewClient(@RequestHeader("Authorization") String token, @PathVariable("email") String email) throws ClientNotFoundException {
-
+    public ResponseEntity<ClientDTO> viewClient(@RequestHeader("Authorization") String token,
+                                                @PathVariable("email") String email) throws ClientNotFoundException {
 
             Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
 
@@ -41,7 +41,6 @@ public class ClientController {
             return client.isEmpty()
                     ? ResponseEntity.notFound().build()
                     : ResponseEntity.ok(clientDTO);
-
     }
 
     public <Entity, D> D convertToDTO(Entity entity, Class<D> dtoClass) {

@@ -8,22 +8,16 @@ import com.ecommerce.model.Article;
 import com.ecommerce.model.Cart;
 import com.ecommerce.model.CartArticle;
 import com.ecommerce.model.PaymentRequest;
-import com.ecommerce.model.enums.PaymentType;
-import com.ecommerce.repository.CartRepository;
 import com.ecommerce.service.interfaces.ArticleFunctions;
 import com.ecommerce.service.interfaces.CartFunctions;
 import com.ecommerce.utilities.JwtUtility;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
-import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,9 +29,6 @@ public class CartController {
     private CartFunctions cartFunctions;
 
     @Autowired
-    private CartRepository cartRepository;
-
-    @Autowired
     private ArticleFunctions articleFunctions;
 
     @Autowired
@@ -47,14 +38,14 @@ public class CartController {
     private JwtUtility jwtUtility;
 
 
-    @GetMapping("carts/client/{email}")
-    public ResponseEntity<List<CartDTO>> viewCartsForClient(@RequestHeader("Authorization") String token,
-                                                            @PathVariable("email") String email ) throws ClientNotFoundException, NoCartsForClientException {
+    @GetMapping("cart/client/{idClient}")
+    public ResponseEntity<List<CartDTO>> viewCartForClient(@RequestHeader("Authorization") String token,
+                                                            @PathVariable("idClient") int idClient ) throws ClientNotFoundException, NoCartsForClientException {
         Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
 
-        List<Cart> carts = cartFunctions.viewClientCarts(email);
+        List<Cart> carts = cartFunctions.viewClientCarts(idClient);
         List<CartDTO> cartsDTO = carts.stream()
-                .map(this::convertToCartDTO) // Utilizza convertToCartDTO invece di convertToDTO
+                .map(this::convertToCartDTO)
                 .collect(Collectors.toList());
 
         return carts.isEmpty()
@@ -84,18 +75,6 @@ public class CartController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/cart/close/{idCart}")
-    public ResponseEntity<CartDTO> closeCart(@RequestHeader("Authorization") String token,
-                                             @PathVariable("idCart") int idCart,
-                                             @RequestBody PaymentRequest paymentRequest) throws CartAlreadyClosedException, ArticleNotFoundException, CartNotFoundException {
-        Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
-
-        Cart cart = cartFunctions.closeCart(idCart, paymentRequest.getPaymentType()).orElseThrow(
-                () -> new CartNotFoundException(idCart)
-        );
-        CartDTO cartDTO = convertToCartDTO(cart);
-        return ResponseEntity.ok(cartDTO);
-    }
 
     //Map cartDTO
     public CartDTO convertToCartDTO(Cart cart)  {

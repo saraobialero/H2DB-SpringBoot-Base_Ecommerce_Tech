@@ -11,8 +11,7 @@ CREATE TABLE IF NOT EXISTS clients (
     email VARCHAR(36) NOT NULL UNIQUE,
     name VARCHAR(20) NOT NULL,
     surname VARCHAR(20) NOT NULL,
-    password VARCHAR(12) NOT NULL,
-    enable BOOLEAN NOT NULL
+    password VARCHAR(12) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS articles (
@@ -26,7 +25,7 @@ CREATE TABLE IF NOT EXISTS articles (
 CREATE TABLE IF NOT EXISTS carts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_client INT NOT NULL UNIQUE,
-   -- state ENUM('IN_PROGRESS', 'UPDATED', 'SAVED') NOT NULL,
+    state ENUM('IN_PROGRESS', 'SAVED') NOT NULL,
     total_price DOUBLE NOT NULL,
     FOREIGN KEY (id_client) REFERENCES clients(id)
 );

@@ -27,7 +27,8 @@ public class Order implements Serializable {
     private PaymentType paymentType;
 
     //ONE-TO-ONE RELATIONSHIP
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToOne
+    @JoinColumn(name = "id_cart", referencedColumnName = "id")
     private Cart cart;
 
     //MANY-TO-ONE RELATIONSHIP: ONE CLIENT CAN HAVE MULTIPLE ORDERS

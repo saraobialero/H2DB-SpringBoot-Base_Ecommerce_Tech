@@ -14,8 +14,10 @@ public interface CartRepository extends JpaRepository<Cart, Integer> {
     @Query("SELECT c FROM Cart c WHERE c.client.idClient = :idClient")
     List<Cart> findAllByClientId(@Param("idClient") int idClient);
 
-    @Query("SELECT c FROM Cart c WHERE c.idCart = :idCart")
-    Optional<Cart> findByIdCart(@Param("idCart") int idCart);
+    Optional<Cart> findByIdCart(int idCart);
+
+    @Query("SELECT c FROM Cart c WHERE c.client.idClient = :idClient")
+    Optional<Cart> findByIdClient(@Param("idClient") int idClient);
 /*
     @Query("SELECT c FROM Cart c WHERE c.client.idClient = :idClient AND c.state != :state")
     Optional<Cart> findActiveCartByClientIdAndStateNot(@Param("idClient") int idClient, @Param("state") State state);

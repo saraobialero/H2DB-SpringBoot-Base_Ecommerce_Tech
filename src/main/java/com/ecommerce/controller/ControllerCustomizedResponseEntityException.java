@@ -58,6 +58,18 @@ public class ControllerCustomizedResponseEntityException extends ResponseEntityE
         return buildResponseEntity(ex, request, HttpStatus.BAD_REQUEST);
     }
 
+    // ORDER EXCEPTION
+
+    // ARTICLE EXCEPTION
+    @ExceptionHandler(ArticleNotFoundException.class)
+    public final ResponseEntity<Object> handleArticleNotFoundException(ArticleNotFoundException ex, WebRequest request) {
+        return buildResponseEntity(ex, request, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InsufficientQuantityException.class)
+    public final ResponseEntity<Object> handleInsufficientQuantityException(InsufficientQuantityException ex, WebRequest request) {
+        return buildResponseEntity(ex, request, HttpStatus.BAD_REQUEST);
+    }
 
 
     // BUILD RESPONSE ENTITY TO REDUCE BOILER PLATE

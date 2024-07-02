@@ -15,8 +15,6 @@ import java.util.Set;
 @NoArgsConstructor
 public class CartDTO {
     String idCart;
-    private PaymentType paymentType;
-    private State state;
     private double totalPrice;
     private Set<CartArticleDTO> cartArticles = new HashSet<>();
 
