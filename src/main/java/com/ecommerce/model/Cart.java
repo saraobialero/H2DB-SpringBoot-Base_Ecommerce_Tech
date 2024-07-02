@@ -25,7 +25,7 @@ public class Cart implements Serializable {
     @JoinColumn(name = "id_client", referencedColumnName = "id")
     private Client client;
 
-    @OneToOne(mappedBy = "cart", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "cart", cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST})
     private Order order;
 
     @Enumerated(EnumType.STRING)
@@ -37,7 +37,7 @@ public class Cart implements Serializable {
     private double totalPrice;
 
     //RELATION MANY-TO-MANY: MORE ARTICLES FOR MORE CARTS
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "articles_has_carts",
             joinColumns = @JoinColumn(name="id_cart"),

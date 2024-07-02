@@ -24,7 +24,7 @@ INSERT INTO articles_has_carts (id_cart, id_article, quantity) VALUES
 (2, 3, 1);
 
 -- Insert statements for orders
-INSERT INTO orders (id_cart, id_client, state, payment_type) VALUES
-(1, 1, 'CONFIRMED', 'CREDIT_CARD'),
-(2, 2, 'CLOSED', 'PAYPAL'),
-(3, 3, 'CONFIRMED', 'BANK_TRANSFER');
+-- INSERT INTO orders (id_cart, id_client, state, payment_type) VALUES
+-- (1, 1, 'CONFIRMED', 'CREDIT_CARD'),
+-- (2, 2, 'CLOSED', 'PAYPAL'),
+-- (3, 3, 'CONFIRMED', 'BANK_TRANSFER');

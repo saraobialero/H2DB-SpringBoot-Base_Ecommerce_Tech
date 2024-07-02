@@ -7,7 +7,6 @@ import com.ecommerce.exception.*;
 import com.ecommerce.model.Article;
 import com.ecommerce.model.Cart;
 import com.ecommerce.model.CartArticle;
-import com.ecommerce.model.PaymentRequest;
 import com.ecommerce.service.interfaces.ArticleFunctions;
 import com.ecommerce.service.interfaces.CartFunctions;
 import com.ecommerce.utilities.JwtUtility;
@@ -72,6 +71,24 @@ public class CartController {
                                         @PathVariable("idCart") int idCart) throws CartNotFoundException, CartAlreadyClosedException, CartAlreadySavedException {
         Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
         cartFunctions.saveCart(idCart);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/cart/{idCart}/article/{idArticle}")
+    public ResponseEntity<Void> deleteArticle(@RequestHeader("Authorization") String token,
+                                         @PathVariable("idCart") int idCart,
+                                         @PathVariable("idArticle") int idArticle) throws CartNotFoundException, ArticleNotFoundException, CartArticleNotFoundException {
+        Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
+        cartFunctions.deleteArticle(idCart, idArticle);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/cart/{idCart}/{idClient}")
+    public ResponseEntity<Void> deleteCart(@RequestHeader("Authorization") String token,
+                                           @PathVariable("idCart") int idCart,
+                                           @PathVariable("idClient") int idClient) throws CartNotFoundException, ArticleNotFoundException, CartArticleNotFoundException {
+        Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
+        cartFunctions.deleteCart(idCart, idClient);
         return ResponseEntity.ok().build();
     }
 

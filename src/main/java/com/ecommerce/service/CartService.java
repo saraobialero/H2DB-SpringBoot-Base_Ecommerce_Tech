@@ -2,6 +2,7 @@ package com.ecommerce.service;
 
 import com.ecommerce.exception.*;
 import com.ecommerce.model.*;
+import com.ecommerce.model.enums.State;
 import com.ecommerce.repository.ArticleRepository;
 import com.ecommerce.repository.CartArticleRepository;
 import com.ecommerce.repository.CartRepository;
@@ -56,8 +57,8 @@ public class CartService implements CartFunctions {
         Cart cart = cartRepository.findByIdClient(idClient)
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
-                //    newCart.setIdCart(6); //AUTOINCREMNT DOESN'T WORK
                     newCart.setClient(client);
+                    newCart.setState(State.IN_PROGRESS);
                     newCart.setTotalPrice(0); //INITIALIZE
                     return cartRepository.save(newCart);
                 });
@@ -85,8 +86,6 @@ public class CartService implements CartFunctions {
         return true;
     }
 
-
-
     @Override
     public List<Cart> viewClientCarts(int idClient) throws ClientNotFoundException, NoCartsForClientException {
         Optional<Client> client = clientService.getClientById(idClient);
@@ -105,8 +104,8 @@ public class CartService implements CartFunctions {
         Cart cart = cartRepository.findByIdCart(idCart)
                 .orElseThrow(() -> new CartNotFoundException(idCart));
 
-
         //SAVE CART
+        cart.setState(State.SAVED);
         cartRepository.save(cart);
         return true;
     }
@@ -117,15 +116,33 @@ public class CartService implements CartFunctions {
         return cartArticleRepository.findByIdCart(idCart);
     }
 
-    @Override
-    public boolean deleteArticle(int idArticle) {
-        return false;
-    }
 
     @Override
-    public boolean deleteCart(int idCart) {
-        return false;
+    public boolean deleteArticle(int idCart, int idArticle) throws CartNotFoundException, ArticleNotFoundException, CartArticleNotFoundException {
+        Cart cart = cartRepository.findByIdCart(idCart)
+                .orElseThrow(() -> new CartNotFoundException(idCart));
+
+        CartArticleId cartArticleId = new CartArticleId(idCart, idArticle);
+        CartArticle cartArticle = cartArticleRepository.findById(cartArticleId)
+                .orElseThrow(() ->  new CartArticleNotFoundException("cart article not found with id: " + cartArticleId));
+
+
+        cartArticleRepository.deleteById(cartArticleId);
+        return true;
     }
+
+    @Transactional
+    @Override
+    public boolean deleteCart(int idCart, int idClient) throws CartNotFoundException {
+        Cart cart = cartRepository.findByIdCart(idCart)
+                .orElseThrow(() -> new CartNotFoundException(idCart));
+        cartArticleRepository.deleteByIdCart(idCart);
+
+        cartRepository.deleteCartById(idCart, idClient);
+        return true;
+    }
+
+
 
 
 }

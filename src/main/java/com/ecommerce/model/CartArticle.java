@@ -11,6 +11,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "articles_has_carts")
 public class CartArticle implements Serializable {
+
     @EmbeddedId
     private CartArticleId id;
 
