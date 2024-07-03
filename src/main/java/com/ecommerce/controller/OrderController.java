@@ -39,7 +39,7 @@ public class OrderController {
 
     @PostMapping("order/{idCart}")
     public ResponseEntity<OrderDTO> createOrder(@RequestHeader("Authorization") String token,
-                                                @PathVariable("idCart") int idCart) throws CartNotFoundException, OrderNotFoundException {
+                                                @PathVariable("idCart") int idCart) throws CartNotFoundException, OrderNotFoundException, ArticleNotFoundException {
         Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
         Order order = orderFunctions.createOrder(idCart)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
@@ -50,57 +50,55 @@ public class OrderController {
 
     }
 
-    public OrderDTO convertToOrderDto(Order order) {
-        OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
+    private OrderDTO convertToOrderDto(Order order) {
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setIdOrder(order.getIdOrder());
+        orderDTO.setState(order.getState());
 
-        // Mappa il carrello (Cart) associato all'ordine (Order)
-        Cart cart = order.getCart();
-        if (cart != null) {
-            CartDTO cartDTO = new CartDTO();
-            cartDTO.setIdCart(cart.getIdCart());
-            cartDTO.setTotalPrice(cart.getTotalPrice());
-            cartDTO.setState(cart.getState());
+        if (order.getOrderDetail() != null) {
+            OrderDetailDTO orderDetailDTO = new OrderDetailDTO();
+            orderDetailDTO.setId(order.getOrderDetail().getId());
+            orderDetailDTO.setTotalPrice(order.getOrderDetail().getTotalPrice());
+            orderDetailDTO.setPaymentType(order.getOrderDetail().getPaymentType());
+            orderDetailDTO.setOrderDate(order.getOrderDetail().getOrderDate());
 
-            List<CartArticle> cartArticles = cartService.getCartArticlesByCartId(cart.getIdCart());
+            List<OrderDetailArticleDTO> orderDetailArticleDTOs = order.getOrderDetail().getOrderDetailArticles().stream()
+                    .map(this::convertToOrderDetailArticleDto)
+                    .collect(Collectors.toList());
+            orderDetailDTO.setOrderDetailArticles(orderDetailArticleDTOs);
 
-            // Mappatura delle CartArticleDTO
-            Set<CartArticleDTO> cartArticleDTOs = cartArticles.stream()
-                    .map(cartArticle -> {
-                        CartArticleDTO cartArticleDTO = new CartArticleDTO();
-                        cartArticleDTO.setQuantity(cartArticle.getQuantity());
-
-                        Article article = articleService.getArticleById(cartArticle.getId().getIdArticle()).orElse(null);
-                        if (article != null) {
-                            cartArticleDTO.setArticle(modelMapper.map(article, ArticleDTO.class));
-                        } else {
-                            // Gestione caso in cui l'articolo non è presente
-                            // Esempio: cartArticleDTO.setArticle(new ArticleDTO());
-                        }
-                        return cartArticleDTO;
-                    })
-                    .collect(Collectors.toSet());
-
-            cartDTO.setCartArticles(cartArticleDTOs);
-            orderDTO.setCart(cartDTO); // Imposta il cartDTO nell'ordineDTO
+            orderDTO.setOrderDetail(orderDetailDTO);
         }
 
-        // Mappa il cliente (Client) associato all'ordine (Order)
-     /*   Client client = order.getClient();
-        if (client != null) {
+        if (order.getClient() != null) {
             ClientDTO clientDTO = new ClientDTO();
-            clientDTO.setIdClient(client.getIdClient());
-            clientDTO.setEmail(client.getEmail());
-            clientDTO.setName(client.getName());
-            clientDTO.setSurname(client.getSurname());
+            clientDTO.setEmail(order.getClient().getEmail());
+            clientDTO.setName(order.getClient().getName());
+            clientDTO.setSurname(order.getClient().getSurname());
 
-            orderDTO.setClient(clientDTO); // Imposta il clientDTO nell'ordineDTO
-        } */
+            orderDTO.setClient(clientDTO);
+        }
 
         return orderDTO;
     }
 
+    private OrderDetailArticleDTO convertToOrderDetailArticleDto(OrderDetailArticle orderDetailArticle) {
+        OrderDetailArticleDTO dto = new OrderDetailArticleDTO();
+        dto.setId(orderDetailArticle.getId());
+        dto.setQuantity(orderDetailArticle.getQuantity());
 
+        if (orderDetailArticle.getArticle() != null) {
+            ArticleDTO articleDTO = new ArticleDTO();
+            articleDTO.setIdArticle(orderDetailArticle.getArticle().getIdArticle());
+            articleDTO.setNameArticle(orderDetailArticle.getArticle().getName());
+            articleDTO.setDescription(orderDetailArticle.getArticle().getDescription());
+            articleDTO.setAvailableQuantity(orderDetailArticle.getArticle().getAvailableQuantity());
+            articleDTO.setPrice(orderDetailArticle.getArticle().getPrice());
+            dto.setArticle(articleDTO);
+        }
 
+        return dto;
+    }
 
         public <Entity, D> D convertToDTO(Entity entity, Class<D> dtoClass) {
         return modelMapper.map(entity, dtoClass);

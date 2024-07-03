@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ArticleDTO {
-    int idArticle;
+    private int idArticle;
     private String nameArticle;
     private String description;
     private int availableQuantity;

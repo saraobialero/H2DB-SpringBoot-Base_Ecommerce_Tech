@@ -2,12 +2,15 @@ package com.ecommerce.model;
 
 import com.ecommerce.model.enums.PaymentType;
 import com.ecommerce.model.enums.State;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -21,12 +24,13 @@ public class Cart implements Serializable {
     int idCart;
 
     //MANY-TO-ONE RELATIONSHIP:
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "id_client", referencedColumnName = "id")
     private Client client;
-
+/*
     @OneToOne(mappedBy = "cart")
-    private Order order;
+    private Order order;*/
 
     @Enumerated(EnumType.STRING)
     @Column (name = "state")
@@ -37,6 +41,7 @@ public class Cart implements Serializable {
     private double totalPrice;
 
     //RELATION MANY-TO-MANY: MORE ARTICLES FOR MORE CARTS
+    @JsonManagedReference
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "articles_has_carts",
@@ -44,6 +49,22 @@ public class Cart implements Serializable {
             inverseJoinColumns = @JoinColumn(name="id_article")
     )
     private Set<Article> articles = new HashSet<>();
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(idCart, state, totalPrice); // Non includere client
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Cart)) return false;
+        Cart cart = (Cart) o;
+        return Objects.equals(idCart, cart.getIdCart()) &&
+                state == cart.state &&
+                Objects.equals(totalPrice, cart.totalPrice);
+    }
+
 
 
 

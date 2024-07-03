@@ -7,7 +7,7 @@ public enum State {
     IN_PROGRESS,
     SAVED,
 
-    CONFIRMED,
+    ACTIVE,
     CLOSED
 
 }
