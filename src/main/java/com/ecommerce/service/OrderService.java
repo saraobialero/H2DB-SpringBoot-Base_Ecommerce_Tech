@@ -1,14 +1,10 @@
 package com.ecommerce.service;
 
-import com.ecommerce.exception.ArticleNotFoundException;
-import com.ecommerce.exception.CartNotFoundException;
+import com.ecommerce.exception.*;
 import com.ecommerce.model.*;
 import com.ecommerce.model.enums.PaymentType;
 import com.ecommerce.model.enums.State;
-import com.ecommerce.repository.ArticleRepository;
-import com.ecommerce.repository.CartArticleRepository;
-import com.ecommerce.repository.CartRepository;
-import com.ecommerce.repository.OrderRepository;
+import com.ecommerce.repository.*;
 import com.ecommerce.service.interfaces.OrderFunctions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +19,9 @@ public class OrderService implements OrderFunctions {
     private OrderRepository orderRepository;
 
     @Autowired
+    private OrderDetailRepository orderDetailRepository;
+
+    @Autowired
     private ArticleRepository articleRepository;
 
     @Autowired
@@ -32,7 +31,7 @@ public class OrderService implements OrderFunctions {
     private CartRepository cartRepository;
 
     @Override
-    public Optional<Order> createOrder(int idCart) throws CartNotFoundException, ArticleNotFoundException {
+    public Optional<Order> createOrder(int idCart) throws CartNotFoundException, ArticleNotFoundException, InsufficientQuantityException {
         //FIND CART
         Cart cart = cartRepository.findByIdCart(idCart)
                 .orElseThrow(() -> new CartNotFoundException(idCart));
@@ -48,27 +47,93 @@ public class OrderService implements OrderFunctions {
         //CREATE NEW ORDER DETAIL
         createOrderDetails(order, cart);
 
+        //REMOVE QUANTITY OF ARTICLES
+        removeArticlesQuantity(cart);
+
         //DELETE FIRST CARET ARTICLE AND THEN  CART
         cartArticleRepository.deleteByIdCart(idCart);
         cartRepository.deleteCartById(idCart, client.getIdClient());
+
 
         return Optional.of(order);
     }
 
     @Override
-    public boolean payOrder(int idOrder, PaymentType paymentType) {
-        return false;
+    public boolean payOrder(int idOrder, PaymentType paymentType) throws OrderNotFoundException, NoOrderDetailForOrderException, OrderAnnulledException {
+        //FIND ORDER
+        Order order = orderRepository.findById(idOrder)
+                .orElseThrow(() -> new OrderNotFoundException("order not found"));
+        int idOrderDetail = order.getOrderDetail().getId();
+        //FIND ORDER DETAIL TO SET TYPE OF PAYMENT AND HOUR
+        OrderDetail orderDetail = orderDetailRepository.findById(idOrderDetail)
+                .orElseThrow(() -> new NoOrderDetailForOrderException("Order detail Not found for order"));
+        if (order.getState().equals(State.ANNULLED)) throw new OrderAnnulledException("Order annulled");
+
+        order.setState(State.CLOSED);
+        orderRepository.save(order);
+
+        orderDetail.setOrderDate(LocalDateTime.now());
+        orderDetail.setPaymentType(paymentType);
+        orderDetailRepository.save(orderDetail);
+        return true;
     }
 
     @Override
-    public boolean deleteOrder(int idOrder) {
-        return false;
+    public boolean deleteOrder(int idOrder) throws OrderNotFoundException, OrderAlreadyClosedException, ArticleNotFoundException {
+
+        //FIND ORDER
+        Order order = orderRepository.findById(idOrder)
+                .orElseThrow(() -> new OrderNotFoundException("order not found"));
+        if(order.getState().equals(State.CLOSED)) throw new OrderAlreadyClosedException("Order already closed");
+
+        // RESTORE THE QUANTITY OF ARTICLES
+        restoreArticlesQuantity(order);
+
+        order.setState(State.ANNULLED);
+        orderRepository.save(order);
+        return true;
     }
 
     @Override
     public List<Order> viewOrders(int idClient) {
-        return List.of();
+        return orderRepository.findByIdClient(idClient);
     }
+
+
+    private void removeArticlesQuantity(Cart cart) throws ArticleNotFoundException, InsufficientQuantityException {
+        List<CartArticle> cartArticles = cartArticleRepository.findByIdCart(cart.getIdCart());
+
+        for (CartArticle cartArticle : cartArticles) {
+            int idArticle = cartArticle.getId().getIdArticle();
+            int quantity = cartArticle.getQuantity();
+
+            Article article = articleRepository.findById(idArticle)
+                    .orElseThrow(() -> new ArticleNotFoundException("Article not found with id: " + idArticle));
+
+            // Rimuovi la quantità dal magazzino
+            int newQuantity = article.getAvailableQuantity() - quantity;
+            if (newQuantity < 0) {
+                throw new InsufficientQuantityException();
+            }
+
+            article.setAvailableQuantity(newQuantity);
+            articleRepository.save(article);
+        }
+    }
+
+    private void restoreArticlesQuantity(Order order) throws ArticleNotFoundException {
+        OrderDetail orderDetail = order.getOrderDetail();
+        Set<OrderDetailArticle> orderDetailArticles = orderDetail.getOrderDetailArticles();
+
+        for (OrderDetailArticle orderDetailArticle : orderDetailArticles) {
+            Article article = orderDetailArticle.getArticle();
+            int quantity = orderDetailArticle.getQuantity();
+            article.setAvailableQuantity(article.getAvailableQuantity() + quantity);
+            articleRepository.save(article);
+        }
+    }
+
+
 
     private void createOrderDetails(Order order, Cart cart) throws CartNotFoundException, ArticleNotFoundException {
         OrderDetail orderDetail = new OrderDetail();

@@ -58,7 +58,7 @@ public class CartService implements CartFunctions {
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
                     newCart.setClient(client);
-                    newCart.setState(State.IN_PROGRESS);
+                    //newCart.setState(State.IN_PROGRESS);
                     newCart.setTotalPrice(0); //INITIALIZE
                     return cartRepository.save(newCart);
                 });
@@ -98,6 +98,7 @@ public class CartService implements CartFunctions {
         return carts;
     }
 
+    //NOT NECESSARY
     @Transactional
     @Override
     public boolean saveCart(int idCart) throws CartNotFoundException, CartAlreadyClosedException, CartAlreadySavedException {
@@ -105,7 +106,6 @@ public class CartService implements CartFunctions {
                 .orElseThrow(() -> new CartNotFoundException(idCart));
 
         //SAVE CART
-        cart.setState(State.SAVED);
         cartRepository.save(cart);
         return true;
     }

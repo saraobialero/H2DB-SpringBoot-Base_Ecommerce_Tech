@@ -12,7 +12,6 @@ import java.util.Set;
 public class CartDTO {
     int idCart;
     private double totalPrice;
-    private State state;
     private Set<CartArticleDTO> cartArticles = new HashSet<>();
 
 

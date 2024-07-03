@@ -4,7 +4,6 @@ import com.ecommerce.exception.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -63,6 +62,21 @@ public class ControllerCustomizedResponseEntityException extends ResponseEntityE
     @ExceptionHandler(OrderNotFoundException.class)
     public final ResponseEntity<Object> handleOrderNotFoundException(OrderNotFoundException ex, WebRequest request) {
         return buildResponseEntity(ex, request, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoOrderDetailForOrderException.class)
+    public final ResponseEntity<Object> handleNoOrderDetailForOrder(NoOrderDetailForOrderException ex, WebRequest request) {
+        return buildResponseEntity(ex, request, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoOrderForClientException.class)
+    public final ResponseEntity<Object> handleNoOrderForClientException(NoOrderForClientException ex, WebRequest request) {
+        return buildResponseEntity(ex, request, HttpStatus.NO_CONTENT);
+    }
+
+    @ExceptionHandler(OrderAnnulledException.class)
+    public final ResponseEntity<Object> handleOrderAnnulledException(OrderAnnulledException ex, WebRequest request) {
+        return buildResponseEntity(ex, request, HttpStatus.BAD_REQUEST);
     }
 
     // ARTICLE EXCEPTION

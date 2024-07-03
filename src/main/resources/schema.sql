@@ -27,7 +27,6 @@ CREATE TABLE IF NOT EXISTS articles (
 CREATE TABLE IF NOT EXISTS carts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_client INT NOT NULL UNIQUE,
-    state ENUM('IN_PROGRESS', 'SAVED') NOT NULL,
     total_price DOUBLE NOT NULL,
     FOREIGN KEY (id_client) REFERENCES clients(id)
 );
@@ -44,7 +43,7 @@ CREATE TABLE IF NOT EXISTS articles_has_carts (
 CREATE TABLE IF NOT EXISTS orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_client INT NOT NULL,
-    state ENUM ('ACTIVE', 'CLOSED') NOT NULL,
+    state ENUM ('ACTIVE', 'CLOSED', 'ANNULLED') NOT NULL,
     FOREIGN KEY (id_client) REFERENCES clients(id)
 );
 

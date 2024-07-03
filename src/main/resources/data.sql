@@ -12,10 +12,10 @@ INSERT INTO articles (name, description, available_quantity, price) VALUES
 ('Headphones', 'Noise-cancelling headphones', 50, 199.99);
 
 -- Insert statements for carts
-INSERT INTO carts (id_client, total_price, state) VALUES
-(1, 199.00, 'SAVED'),
-(2, 299.99, 'SAVED'),
-(3, 499.99, 'SAVED');
+INSERT INTO carts (id_client, total_price) VALUES
+(1, 199.00),
+(2, 299.99),
+(3, 499.99);
 
 -- Insert statements for articles_has_carts
 INSERT INTO articles_has_carts (id_cart, id_article, quantity) VALUES

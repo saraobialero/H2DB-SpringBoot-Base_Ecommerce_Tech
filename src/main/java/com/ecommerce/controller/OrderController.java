@@ -14,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,9 +35,9 @@ public class OrderController {
     @Autowired
     private ArticleService articleService;
 
-    @PostMapping("order/{idCart}")
+    @PostMapping("order/cart/{idCart}")
     public ResponseEntity<OrderDTO> createOrder(@RequestHeader("Authorization") String token,
-                                                @PathVariable("idCart") int idCart) throws CartNotFoundException, OrderNotFoundException, ArticleNotFoundException {
+                                                @PathVariable("idCart") int idCart) throws CartNotFoundException, OrderNotFoundException, ArticleNotFoundException, InsufficientQuantityException {
         Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
         Order order = orderFunctions.createOrder(idCart)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
@@ -49,6 +47,47 @@ public class OrderController {
         return ResponseEntity.ok(orderDTO);
 
     }
+
+    @PostMapping("order/{idOrder}")
+    public ResponseEntity<Void> payOrder(@RequestHeader("Authorization") String token,
+                                         @PathVariable("idOrder") int idOrder,
+                                         @RequestBody PaymentRequest paymentRequest) throws OrderNotFoundException, NoOrderDetailForOrderException, OrderAnnulledException {
+        Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
+
+        boolean paymentSuccessfully = orderFunctions.payOrder(idOrder, paymentRequest.getPaymentType());
+        return paymentSuccessfully ?
+                ResponseEntity.ok().build() :
+                ResponseEntity.badRequest().build();
+    }
+
+    @PatchMapping("state/{idOrder}")
+    public ResponseEntity<Void> deleteOrder(@RequestHeader("Authorization") String token,
+                                            @PathVariable("idOrder") int idOrder) throws OrderNotFoundException, NoOrderDetailForOrderException, OrderAlreadyClosedException, ArticleNotFoundException {
+        Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
+
+        boolean deletedSuccessfully = orderFunctions.deleteOrder(idOrder);
+        return deletedSuccessfully ?
+                ResponseEntity.ok().build() :
+                ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("client/orders/{idClient}")
+    public ResponseEntity<List<OrderDTO>> viewOrdersForClient(@RequestHeader("Authorization") String token,
+                                                              @PathVariable("idClient") int idClient) throws OrderNotFoundException, NoOrderDetailForOrderException, OrderAlreadyClosedException, ArticleNotFoundException, NoOrderForClientException {
+        Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
+
+        List<Order> orders = orderFunctions.viewOrders(idClient);
+        List<OrderDTO> ordersDTO = orders.stream()
+                .map(order -> convertToDTO(order, OrderDTO.class))
+                .collect(Collectors.toList());
+
+        if (ordersDTO.isEmpty()) throw new NoOrderForClientException("no order for client with id: " + idClient);
+
+        return ResponseEntity.ok(ordersDTO);
+
+
+    }
+
 
     private OrderDTO convertToOrderDto(Order order) {
         OrderDTO orderDTO = new OrderDTO();
@@ -100,7 +139,10 @@ public class OrderController {
         return dto;
     }
 
-        public <Entity, D> D convertToDTO(Entity entity, Class<D> dtoClass) {
+    public <Entity, D> D convertToDTO(Entity entity, Class<D> dtoClass) {
         return modelMapper.map(entity, dtoClass);
     }
+
+
+
 }

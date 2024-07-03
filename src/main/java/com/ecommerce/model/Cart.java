@@ -25,16 +25,9 @@ public class Cart implements Serializable {
 
     //MANY-TO-ONE RELATIONSHIP:
     @JsonBackReference
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "id_client", referencedColumnName = "id")
     private Client client;
-/*
-    @OneToOne(mappedBy = "cart")
-    private Order order;*/
-
-    @Enumerated(EnumType.STRING)
-    @Column (name = "state")
-    private State state;
 
 
     @Column (name = "total_price")
@@ -52,7 +45,7 @@ public class Cart implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(idCart, state, totalPrice); // Non includere client
+        return Objects.hash(idCart, totalPrice); // Non includere client
     }
 
     @Override
@@ -61,7 +54,6 @@ public class Cart implements Serializable {
         if (!(o instanceof Cart)) return false;
         Cart cart = (Cart) o;
         return Objects.equals(idCart, cart.getIdCart()) &&
-                state == cart.state &&
                 Objects.equals(totalPrice, cart.totalPrice);
     }
 

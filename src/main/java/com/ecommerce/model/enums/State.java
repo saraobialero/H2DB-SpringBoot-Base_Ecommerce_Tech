@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 @JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum State {
-    IN_PROGRESS,
-    SAVED,
-
     ACTIVE,
-    CLOSED
+    CLOSED,
+    ANNULLED
 
 }
