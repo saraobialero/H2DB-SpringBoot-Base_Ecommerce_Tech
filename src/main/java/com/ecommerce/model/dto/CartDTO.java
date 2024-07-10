@@ -1,9 +1,9 @@
-package com.ecommerce.dto;
+package com.ecommerce.model.dto;
 
-import com.ecommerce.model.enums.State;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,7 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class CartDTO {
     int idCart;
-    private double totalPrice;
+    private BigDecimal totalPrice;
     private Set<CartArticleDTO> cartArticles = new HashSet<>();
 
 

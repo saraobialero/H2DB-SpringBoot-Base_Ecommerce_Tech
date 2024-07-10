@@ -1,8 +1,8 @@
 package com.ecommerce.controller;
 
-import com.ecommerce.dto.ArticleDTO;
-import com.ecommerce.dto.CartArticleDTO;
-import com.ecommerce.dto.CartDTO;
+import com.ecommerce.model.dto.ArticleDTO;
+import com.ecommerce.model.dto.CartArticleDTO;
+import com.ecommerce.model.dto.CartDTO;
 import com.ecommerce.exception.*;
 import com.ecommerce.model.Article;
 import com.ecommerce.model.Cart;
@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,25 +55,18 @@ public class CartController {
     }
 
     @PostMapping("cart/{idClient}/{idArticle}/{quantity}")
-    public ResponseEntity<Void> addArticleToCarts(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Integer> addArticleToCarts(@RequestHeader("Authorization") String token,
                                                   @PathVariable("idClient") int idClient,
                                                   @PathVariable("idArticle") int idArticle,
                                                   @PathVariable("quantity") int quantity) throws ClientNotFoundException, ArticleNotFoundException, InsufficientQuantityException {
         Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
 
-        cartFunctions.addArticleToCart(idClient, idArticle, quantity);
+        int idCart = cartFunctions.addArticleToCart(idClient, idArticle, quantity);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(idCart);
 
     }
 
-    @PatchMapping("/cart/state/{idCart}")
-    public ResponseEntity<Void> saveCart(@RequestHeader("Authorization") String token,
-                                        @PathVariable("idCart") int idCart) throws CartNotFoundException, CartAlreadyClosedException, CartAlreadySavedException {
-        Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
-        cartFunctions.saveCart(idCart);
-        return ResponseEntity.ok().build();
-    }
 
     @DeleteMapping("/cart/{idCart}/article/{idArticle}")
     public ResponseEntity<Void> deleteArticle(@RequestHeader("Authorization") String token,
@@ -96,7 +90,6 @@ public class CartController {
     //Map cartDTO
     public CartDTO convertToCartDTO(Cart cart)  {
         CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
-
         // Ottenere la lista di CartArticle per il carrello specificato
         List<CartArticle> cartArticles = cartFunctions.getCartArticlesByCartId(cart.getIdCart());
 

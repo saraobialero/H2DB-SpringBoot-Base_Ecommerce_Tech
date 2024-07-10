@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
@@ -20,6 +21,9 @@ public class Article implements Serializable {
     @Column (name = "name")
     private String name;
 
+    @Column (name = "feature")
+    private String feature;
+
     @Column (name = "description")
     private String description;
 
@@ -27,5 +31,8 @@ public class Article implements Serializable {
     private int availableQuantity;
 
     @Column (name = "price")
-    private double price;
+    private BigDecimal price;
+
+    @Column (name = "image_path")
+    private String imagePath;
 }

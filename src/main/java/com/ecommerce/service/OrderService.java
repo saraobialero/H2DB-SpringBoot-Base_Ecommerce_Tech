@@ -22,6 +22,9 @@ public class OrderService implements OrderFunctions {
     private OrderDetailRepository orderDetailRepository;
 
     @Autowired
+    private OrderDetailArticleRepository orderDetailArticleRepository;
+
+    @Autowired
     private ArticleRepository articleRepository;
 
     @Autowired
@@ -31,7 +34,7 @@ public class OrderService implements OrderFunctions {
     private CartRepository cartRepository;
 
     @Override
-    public Optional<Order> createOrder(int idCart) throws CartNotFoundException, ArticleNotFoundException, InsufficientQuantityException {
+    public int createOrder(int idCart) throws CartNotFoundException, ArticleNotFoundException, InsufficientQuantityException {
         //FIND CART
         Cart cart = cartRepository.findByIdCart(idCart)
                 .orElseThrow(() -> new CartNotFoundException(idCart));
@@ -55,7 +58,7 @@ public class OrderService implements OrderFunctions {
         cartRepository.deleteCartById(idCart, client.getIdClient());
 
 
-        return Optional.of(order);
+        return order.getIdOrder();
     }
 
     @Override
@@ -99,6 +102,13 @@ public class OrderService implements OrderFunctions {
         return orderRepository.findByIdClient(idClient);
     }
 
+    @Override
+    public Optional<Order> viewOrderById(int idOrder) throws OrderNotFoundException {
+        Order order = orderRepository.findById(idOrder)
+                .orElseThrow(() -> new OrderNotFoundException("order not found"));
+        return Optional.of(order);
+    }
+
 
     private void removeArticlesQuantity(Cart cart) throws ArticleNotFoundException, InsufficientQuantityException {
         List<CartArticle> cartArticles = cartArticleRepository.findByIdCart(cart.getIdCart());
@@ -133,8 +143,6 @@ public class OrderService implements OrderFunctions {
         }
     }
 
-
-
     private void createOrderDetails(Order order, Cart cart) throws CartNotFoundException, ArticleNotFoundException {
         OrderDetail orderDetail = new OrderDetail();
         orderDetail.setOrder(order);
@@ -142,7 +150,11 @@ public class OrderService implements OrderFunctions {
         orderDetail.setPaymentType(PaymentType.NOT_DEFINED);
         orderDetail.setOrderDate(LocalDateTime.now());
 
+        // Save OrderDetail before adding OrderDetailArticles
+        orderDetail = orderDetailRepository.save(orderDetail);
+
         List<CartArticle> cartArticles = cartArticleRepository.findByIdCart(cart.getIdCart());
+        System.out.println("Cart articles: " + cartArticles);
 
         for (CartArticle cartArticle : cartArticles) {
             int idArticle = cartArticle.getId().getIdArticle();
@@ -159,6 +171,8 @@ public class OrderService implements OrderFunctions {
 
             // ADD ORDER DETAIL ARTICLE TO COLLECTION ORDER DETAIL
             orderDetail.getOrderDetailArticles().add(orderDetailArticle);
+            // SAVE EACH ORDER DETAIL
+            orderDetailArticleRepository.save(orderDetailArticle);
         }
 
         // SET ORDER DETAIL ON ORDER

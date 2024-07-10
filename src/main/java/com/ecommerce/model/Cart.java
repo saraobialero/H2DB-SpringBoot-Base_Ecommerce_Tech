@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -29,9 +30,8 @@ public class Cart implements Serializable {
     @JoinColumn(name = "id_client", referencedColumnName = "id")
     private Client client;
 
-
-    @Column (name = "total_price")
-    private double totalPrice;
+    @Column (name = "total_price", precision = 10, scale = 2)
+    private BigDecimal totalPrice;
 
     //RELATION MANY-TO-MANY: MORE ARTICLES FOR MORE CARTS
     @JsonManagedReference

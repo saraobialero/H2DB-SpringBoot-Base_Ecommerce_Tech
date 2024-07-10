@@ -1,8 +1,8 @@
 package com.ecommerce.controller;
 
-import com.ecommerce.dto.*;
 import com.ecommerce.exception.*;
 import com.ecommerce.model.*;
+import com.ecommerce.model.dto.*;
 import com.ecommerce.service.ArticleService;
 import com.ecommerce.service.CartService;
 import com.ecommerce.service.interfaces.OrderFunctions;
@@ -36,16 +36,12 @@ public class OrderController {
     private ArticleService articleService;
 
     @PostMapping("order/cart/{idCart}")
-    public ResponseEntity<OrderDTO> createOrder(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Integer> createOrder(@RequestHeader("Authorization") String token,
                                                 @PathVariable("idCart") int idCart) throws CartNotFoundException, OrderNotFoundException, ArticleNotFoundException, InsufficientQuantityException {
         Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
-        Order order = orderFunctions.createOrder(idCart)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+        int idOrder = orderFunctions.createOrder(idCart);
 
-        OrderDTO orderDTO = convertToOrderDto(order);
-
-        return ResponseEntity.ok(orderDTO);
-
+        return ResponseEntity.ok(idOrder);
     }
 
     @PostMapping("order/{idOrder}")
@@ -84,10 +80,19 @@ public class OrderController {
         if (ordersDTO.isEmpty()) throw new NoOrderForClientException("no order for client with id: " + idClient);
 
         return ResponseEntity.ok(ordersDTO);
-
-
     }
 
+    @GetMapping("order/{idOrder}")
+    public ResponseEntity<OrderDTO> viewOrderByIdOrder(@RequestHeader("Authorization") String token,
+                                                       @PathVariable("idOrder") int idOrder) throws OrderNotFoundException, NoOrderDetailForOrderException, OrderAlreadyClosedException, ArticleNotFoundException, NoOrderForClientException {
+        Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
+
+        Order order = orderFunctions.viewOrderById(idOrder)
+                        .orElseThrow(() -> new OrderNotFoundException("order not found"));
+        OrderDTO orderDTO = convertToOrderDto(order);
+
+        return ResponseEntity.ok(orderDTO);
+    }
 
     private OrderDTO convertToOrderDto(Order order) {
         OrderDTO orderDTO = new OrderDTO();
@@ -104,6 +109,14 @@ public class OrderController {
             List<OrderDetailArticleDTO> orderDetailArticleDTOs = order.getOrderDetail().getOrderDetailArticles().stream()
                     .map(this::convertToOrderDetailArticleDto)
                     .collect(Collectors.toList());
+
+            // Log the articles
+            orderDetailArticleDTOs.forEach(article -> {
+                System.out.println("Article ID: " + article.getId());
+                System.out.println("Article Quantity: " + article.getQuantity());
+                System.out.println("Article Name: " + article.getArticle().getNameArticle());
+            });
+
             orderDetailDTO.setOrderDetailArticles(orderDetailArticleDTOs);
 
             orderDTO.setOrderDetail(orderDetailDTO);
@@ -120,6 +133,7 @@ public class OrderController {
 
         return orderDTO;
     }
+
 
     private OrderDetailArticleDTO convertToOrderDetailArticleDto(OrderDetailArticle orderDetailArticle) {
         OrderDetailArticleDTO dto = new OrderDetailArticleDTO();

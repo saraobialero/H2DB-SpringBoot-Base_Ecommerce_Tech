@@ -1,9 +1,10 @@
-package com.ecommerce.dto;
+package com.ecommerce.model.dto;
 
 import com.ecommerce.model.enums.PaymentType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderDetailDTO {
     private int id;
-    private double totalPrice;
+    private BigDecimal totalPrice;
     private PaymentType paymentType;
     private LocalDateTime orderDate;
     private List<OrderDetailArticleDTO> orderDetailArticles;

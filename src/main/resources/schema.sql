@@ -18,16 +18,18 @@ CREATE TABLE IF NOT EXISTS clients (
 
 CREATE TABLE IF NOT EXISTS articles (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(20) NOT NULL,
-    description VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    feature VARCHAR(125) NOT NULL,
+    description VARCHAR(255) NOT NULL,
     available_quantity INT NOT NULL,
-    price DOUBLE NOT NULL
+    price DECIMAL(10, 2) NOT NULL,
+    image_path VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS carts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_client INT NOT NULL UNIQUE,
-    total_price DOUBLE NOT NULL,
+    total_price DECIMAL NOT NULL,
     FOREIGN KEY (id_client) REFERENCES clients(id)
 );
 

@@ -1,6 +1,7 @@
 package com.ecommerce.controller;
 
-import com.ecommerce.dto.ArticleDTO;
+import com.ecommerce.model.dto.ArticleDTO;
+import com.ecommerce.exception.ArticleNotFoundException;
 import com.ecommerce.model.Article;
 import com.ecommerce.service.interfaces.ArticleFunctions;
 import com.ecommerce.utilities.JwtUtility;
@@ -8,12 +9,9 @@ import io.jsonwebtoken.Claims;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -30,17 +28,31 @@ public class ArticleController {
     private JwtUtility jwtUtility;
 
     @GetMapping("articles")
-    public ResponseEntity<List<ArticleDTO>> viewArticles(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<Set<ArticleDTO>> viewArticles(@RequestHeader("Authorization") String token) {
         Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
 
-        List<Article> articles = articleFunctions.getArticles();
-        List<ArticleDTO> articlesDTO = articles.stream()
+        Set<Article> articles = articleFunctions.getArticles();
+        Set<ArticleDTO> articlesDTO = articles.stream()
                                         .map(article -> convertToDTO(article, ArticleDTO.class))
-                                        .collect(Collectors.toList());
+                                        .collect(Collectors.toSet());
 
         return articles.isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(articlesDTO);
+
+    }
+
+    @GetMapping("article/{idArticle}")
+    public ResponseEntity<ArticleDTO> viewArticle(@RequestHeader("Authorization") String token,
+                                                  @PathVariable("idArticle") int idArticle) throws ArticleNotFoundException {
+        Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
+
+        Article article = articleFunctions.getArticleById(idArticle)
+                            .orElseThrow(() -> new ArticleNotFoundException("Article with id " + idArticle + "not found"));
+
+        ArticleDTO articleDTO = convertToDTO(article, ArticleDTO.class);
+
+        return ResponseEntity.ok(articleDTO);
 
     }
 

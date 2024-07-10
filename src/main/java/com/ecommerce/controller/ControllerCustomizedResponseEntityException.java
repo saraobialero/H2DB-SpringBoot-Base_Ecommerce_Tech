@@ -85,6 +85,11 @@ public class ControllerCustomizedResponseEntityException extends ResponseEntityE
         return buildResponseEntity(ex, request, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(NoArticlesException.class)
+    public final ResponseEntity<Object> handleNoArticleException(NoArticlesException ex, WebRequest request) {
+        return buildResponseEntity(ex, request, HttpStatus.NO_CONTENT);
+    }
+
     @ExceptionHandler(InsufficientQuantityException.class)
     public final ResponseEntity<Object> handleInsufficientQuantityException(InsufficientQuantityException ex, WebRequest request) {
         return buildResponseEntity(ex, request, HttpStatus.BAD_REQUEST);

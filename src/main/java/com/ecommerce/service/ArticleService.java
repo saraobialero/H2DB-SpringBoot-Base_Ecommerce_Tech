@@ -1,6 +1,7 @@
 package com.ecommerce.service;
 
 import com.ecommerce.exception.ArticleNotFoundException;
+import com.ecommerce.exception.NoArticlesException;
 import com.ecommerce.model.Article;
 import com.ecommerce.repository.ArticleRepository;
 import com.ecommerce.service.interfaces.ArticleFunctions;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ArticleService implements ArticleFunctions {
@@ -24,8 +27,12 @@ public class ArticleService implements ArticleFunctions {
     }
 
     @Override
-    public List<Article> getArticles() {
-        return articleRepository.findAll();
+    public Set<Article> getArticles() {
+        Set<Article> articles = articleRepository.findAll().stream().collect(Collectors.toSet());
+        if (articles.isEmpty()) throw new NoArticlesException("No article in store");
+        return articles.stream()
+                .filter(article -> article.getAvailableQuantity() > 0)
+                .collect(Collectors.toSet());
     }
 
     @Override

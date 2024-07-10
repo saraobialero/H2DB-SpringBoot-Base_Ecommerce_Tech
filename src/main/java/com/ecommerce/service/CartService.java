@@ -12,6 +12,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +40,7 @@ public class CartService implements CartFunctions {
 
     @Transactional
     @Override
-    public boolean addArticleToCart(int idClient, int idArticle, int quantity) throws ClientNotFoundException, ArticleNotFoundException, InsufficientQuantityException {
+    public int addArticleToCart(int idClient, int idArticle, int quantity) throws ClientNotFoundException, ArticleNotFoundException, InsufficientQuantityException {
 
         // GET CLIENT FROM CLIENT REPOSITORY
         Client client = clientService.getClientById(idClient)
@@ -58,8 +60,7 @@ public class CartService implements CartFunctions {
                 .orElseGet(() -> {
                     Cart newCart = new Cart();
                     newCart.setClient(client);
-                    //newCart.setState(State.IN_PROGRESS);
-                    newCart.setTotalPrice(0); //INITIALIZE
+                    newCart.setTotalPrice(new BigDecimal("0.00")); //INITIALIZE
                     return cartRepository.save(newCart);
                 });
 
@@ -81,9 +82,11 @@ public class CartService implements CartFunctions {
         cartArticleRepository.save(cartArticle);
 
         // UPDATE TOTAL PRICE OF THE CART
-        cart.setTotalPrice(cart.getTotalPrice() + (article.getPrice() * quantity));
+        BigDecimal quantityBigDecimal = new BigDecimal(quantity);
+        BigDecimal additionalPrice = article.getPrice().multiply(quantityBigDecimal);
+        cart.setTotalPrice(cart.getTotalPrice().add(additionalPrice));
 
-        return true;
+        return cart.getIdCart();
     }
 
     @Override
@@ -96,18 +99,6 @@ public class CartService implements CartFunctions {
         if (carts.isEmpty()) throw new NoCartsForClientException("No carts for client:" + idClient);
 
         return carts;
-    }
-
-    //NOT NECESSARY
-    @Transactional
-    @Override
-    public boolean saveCart(int idCart) throws CartNotFoundException, CartAlreadyClosedException, CartAlreadySavedException {
-        Cart cart = cartRepository.findByIdCart(idCart)
-                .orElseThrow(() -> new CartNotFoundException(idCart));
-
-        //SAVE CART
-        cartRepository.save(cart);
-        return true;
     }
 
 
@@ -126,8 +117,21 @@ public class CartService implements CartFunctions {
         CartArticle cartArticle = cartArticleRepository.findById(cartArticleId)
                 .orElseThrow(() ->  new CartArticleNotFoundException("cart article not found with id: " + cartArticleId));
 
+        Article article = articleRepository.findById(idArticle)
+                .orElseThrow(() -> new ArticleNotFoundException("Article not found"));
 
-        cartArticleRepository.deleteById(cartArticleId);
+        // REMOVE QUANTITY
+        if (cartArticle.getQuantity() > 1) {
+            cartArticle.setQuantity(cartArticle.getQuantity() - 1);
+            cartArticleRepository.save(cartArticle);
+        } else {
+            cartArticleRepository.deleteById(cartArticleId);
+        }
+
+        // UPDATE TOTAL PRICE
+        cart.setTotalPrice(cart.getTotalPrice().subtract(article.getPrice()));
+        cartRepository.save(cart);
+
         return true;
     }
 
