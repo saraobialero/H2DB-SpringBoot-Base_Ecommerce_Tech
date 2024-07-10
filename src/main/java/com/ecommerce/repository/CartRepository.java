@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<Cart, Integer> {
 
     @Query("SELECT c FROM Cart c WHERE c.client.idClient = :idClient")
-    List<Cart> findAllByClientId(@Param("idClient") int idClient);
+    Optional<Cart> findAllByClientId(@Param("idClient") int idClient);
 
     Optional<Cart> findByIdCart(int idCart);
 

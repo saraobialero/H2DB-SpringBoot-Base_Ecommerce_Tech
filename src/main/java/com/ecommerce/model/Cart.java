@@ -56,9 +56,4 @@ public class Cart implements Serializable {
         return Objects.equals(idCart, cart.getIdCart()) &&
                 Objects.equals(totalPrice, cart.totalPrice);
     }
-
-
-
-
-
 }

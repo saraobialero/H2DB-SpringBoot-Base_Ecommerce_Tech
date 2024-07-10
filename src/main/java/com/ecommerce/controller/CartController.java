@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,19 +40,16 @@ public class CartController {
 
 
     @GetMapping("cart/client/{idClient}")
-    public ResponseEntity<List<CartDTO>> viewCartForClient(@RequestHeader("Authorization") String token,
+    public ResponseEntity<CartDTO> viewCartForClient(@RequestHeader("Authorization") String token,
                                                             @PathVariable("idClient") int idClient ) throws ClientNotFoundException, NoCartsForClientException {
         Claims claims = jwtUtility.validateToken(token.replace("Bearer ", ""));
 
-        List<Cart> carts = cartFunctions.viewClientCarts(idClient);
-        List<CartDTO> cartsDTO = carts.stream()
-                .map(this::convertToCartDTO)
-                .collect(Collectors.toList());
+        Optional<Cart> cartOptional = cartFunctions.viewClientCarts(idClient);
 
-        return carts.isEmpty()
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.ok(cartsDTO);
-
+        return cartOptional.map(cart -> {
+            CartDTO cartDTO = convertToCartDTO(cart);
+            return ResponseEntity.ok(cartDTO);
+        }).orElse(ResponseEntity.noContent().build());
     }
 
     @PostMapping("cart/{idClient}/{idArticle}/{quantity}")
@@ -88,8 +86,9 @@ public class CartController {
 
 
     //Map cartDTO
-    public CartDTO convertToCartDTO(Cart cart)  {
+    public CartDTO convertToCartDTO(Cart cart) {
         CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
+
         // Ottenere la lista di CartArticle per il carrello specificato
         List<CartArticle> cartArticles = cartFunctions.getCartArticlesByCartId(cart.getIdCart());
 
@@ -99,8 +98,10 @@ public class CartController {
                     CartArticleDTO cartArticleDTO = new CartArticleDTO();
                     cartArticleDTO.setQuantity(cartArticle.getQuantity());
 
-                    Article article = articleFunctions.getArticleById(cartArticle.getId().getIdArticle()).get();
-                    cartArticleDTO.setArticle(modelMapper.map(article, ArticleDTO.class));
+                    Optional<Article> articleOptional = articleFunctions.getArticleById(cartArticle.getId().getIdArticle());
+                    articleOptional.ifPresent(article ->
+                            cartArticleDTO.setArticle(modelMapper.map(article, ArticleDTO.class))
+                    );
                     return cartArticleDTO;
                 })
                 .collect(Collectors.toSet());

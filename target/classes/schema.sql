@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS articles (
 CREATE TABLE IF NOT EXISTS carts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_client INT NOT NULL UNIQUE,
-    total_price DECIMAL NOT NULL,
+    total_price DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (id_client) REFERENCES clients(id)
 );
 
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS orders (
 CREATE TABLE IF NOT EXISTS order_details (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_order INT NOT NULL UNIQUE,
-    total_price DOUBLE NOT NULL,
+    total_price DECIMAL(10, 2) NOT NULL,
     payment_type ENUM('NOT_DEFINED', 'CREDIT_CARD', 'GOOGLE_PAY', 'PAYPAL', 'BANK_TRANSFER') NOT NULL,
     order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_order) REFERENCES orders(id)

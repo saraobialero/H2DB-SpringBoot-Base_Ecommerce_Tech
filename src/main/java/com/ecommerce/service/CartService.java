@@ -90,15 +90,16 @@ public class CartService implements CartFunctions {
     }
 
     @Override
-    public List<Cart> viewClientCarts(int idClient) throws ClientNotFoundException, NoCartsForClientException {
+    public Optional<Cart> viewClientCarts(int idClient) throws ClientNotFoundException, NoCartsForClientException {
         Optional<Client> client = clientService.getClientById(idClient);
         if (client.isEmpty()) throw new ClientNotFoundException("Client not found");
 
 
-        List<Cart> carts = cartRepository.findAllByClientId(idClient);
-        if (carts.isEmpty()) throw new NoCartsForClientException("No carts for client:" + idClient);
+        Optional<Cart> cart = cartRepository.findAllByClientId(idClient);
+        if (cart.isEmpty()) throw new NoCartsForClientException("No carts for client:" + idClient);
+        System.out.println( cart.get().getTotalPrice());
 
-        return carts;
+        return cart;
     }
 
 

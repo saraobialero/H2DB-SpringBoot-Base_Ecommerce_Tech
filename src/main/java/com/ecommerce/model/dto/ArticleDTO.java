@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class ArticleDTO {
     private int idArticle;
-    private String nameArticle;
+    private String name;
     private String feature;
     private String description;
     private int availableQuantity;

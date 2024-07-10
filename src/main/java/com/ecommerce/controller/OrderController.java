@@ -114,7 +114,7 @@ public class OrderController {
             orderDetailArticleDTOs.forEach(article -> {
                 System.out.println("Article ID: " + article.getId());
                 System.out.println("Article Quantity: " + article.getQuantity());
-                System.out.println("Article Name: " + article.getArticle().getNameArticle());
+                System.out.println("Article Name: " + article.getArticle().getName());
             });
 
             orderDetailDTO.setOrderDetailArticles(orderDetailArticleDTOs);
@@ -143,7 +143,7 @@ public class OrderController {
         if (orderDetailArticle.getArticle() != null) {
             ArticleDTO articleDTO = new ArticleDTO();
             articleDTO.setIdArticle(orderDetailArticle.getArticle().getIdArticle());
-            articleDTO.setNameArticle(orderDetailArticle.getArticle().getName());
+            articleDTO.setName(orderDetailArticle.getArticle().getName());
             articleDTO.setDescription(orderDetailArticle.getArticle().getDescription());
             articleDTO.setAvailableQuantity(orderDetailArticle.getArticle().getAvailableQuantity());
             articleDTO.setPrice(orderDetailArticle.getArticle().getPrice());
