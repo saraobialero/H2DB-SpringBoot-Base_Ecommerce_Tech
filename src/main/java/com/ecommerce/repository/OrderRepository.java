@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
-    @Query("SELECT o FROM Order o WHERE o.client.idClient = :idClient")
+    @Query("SELECT o FROM Order o WHERE o.client.idClient = :idClient AND state != 'ACTIVE'")
     List<Order> findByIdClient(int idClient);
 
 }
