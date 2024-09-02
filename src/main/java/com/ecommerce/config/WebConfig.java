@@ -1,5 +1,6 @@
 package com.ecommerce.config;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .defaultContentType(MediaType.APPLICATION_JSON)
                 .useRegisteredExtensionsOnly(true);
     }
+
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
